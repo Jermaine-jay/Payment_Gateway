@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Payment_Gateway.BLL.Interfaces.IServices
+{
+    public interface IAccountLockoutService
+    {
+        /// <summary>
+        /// Checks if a user's account is currently locked
+        /// </summary>
+        /// <param name="userId">unique identifier of a user</param>
+        /// <returns></returns>
+        Task<(bool, int?)> IsAccountLocked(string userId);
+
+        /// <summary>
+        /// Tracks a failed login attempt on a users account
+        /// </summary>
+        /// <param name="userId">unique identifier of a user</param>
+        /// <returns></returns>
+        Task<bool> RecordFailedLoginAttempt(string userId);
+
+        /// <summary>
+        /// Records a successful login attempt on a users account and clears any account lockout flags
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task RecordSuccessfulLoginAttempt(string userId);
+    }
+}
