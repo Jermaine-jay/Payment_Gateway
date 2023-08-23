@@ -11,7 +11,7 @@ namespace Payment_Gateway.BLL.Paystack.Implementation
 {
     public class PayoutService : IPayoutService
     {
-        public readonly IRepository<Transaction> _transactionRepo;
+        public readonly IRepository<Payin> _transactionRepo;
         public readonly IRepository<Payout> _payoutRepo;
         private readonly ILoggerManager _logger;
         private readonly IUnitOfWork _unitOfWork;
@@ -24,7 +24,7 @@ namespace Payment_Gateway.BLL.Paystack.Implementation
             _logger = logger;
             _unitOfWork = unitOfWork;
             _payoutRepo = _unitOfWork.GetRepository<Payout>();
-            _transactionRepo = unitOfWork.GetRepository<Transaction>();
+            _transactionRepo = unitOfWork.GetRepository<Payin>();
             _PaystackPostRequest = paystackPostRequest;
             _paystackConfig = paystackConfig;
         }

@@ -39,7 +39,6 @@ namespace Payment_Gateway.BLL.Implementation
             {
                 TransactionHistory history = new()
                 {
-                    Id = Guid.NewGuid(),
                     WalletId = user.WalletId,
                     DebitTransactionList = new List<Payout>
                     {

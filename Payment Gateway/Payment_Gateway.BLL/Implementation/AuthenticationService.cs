@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Infrastructure.Otp;
-using Payment_Gateway.BLL.Infrastructure.Security;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.BLL.Interfaces.IServices;
 using Payment_Gateway.DAL.Interfaces;

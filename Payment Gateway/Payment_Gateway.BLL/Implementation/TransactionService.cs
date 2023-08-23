@@ -82,14 +82,14 @@ namespace Payment_Gateway.BLL.Implementation
                     Responsestatus = d.Responsestatus,
                     Status = d.Status,
                     CreatedAt = d.CreatedAt,
-                }),
+                }).ToList(),
 
-                CreditTransactionList = e.CreditTransactionList.Select(c => new Transaction
+                CreditTransactionList = e.CreditTransactionList.Select(c => new Payin
                 {
-                    WalletId = c.WalletId,
                     Transactionid = c.Transactionid,
                     Amount = c.Amount,
                     UserId = c.UserId,
+                    WalletId = c.WalletId,
                     Reference = c.Reference,
                     Email = c.Email,
                     AccountName = c.AccountName,
@@ -98,7 +98,7 @@ namespace Payment_Gateway.BLL.Implementation
                     GatewayResponse = c.GatewayResponse,
                     CreatedAt = c.CreatedAt,
                     PaidAt = c.PaidAt,
-                }),
+                }).ToList(),
             });
 
             return new ServiceResponse<IEnumerable<TransactionHistory>>
@@ -182,12 +182,12 @@ namespace Payment_Gateway.BLL.Implementation
                             CreatedAt = d.CreatedAt,
                         }),
 
-                        CreditTransactionList = e.CreditTransactionList.Select(c => new Transaction
+                        CreditTransactionList = e.CreditTransactionList.Select(c => new Payin
                         {
-                            WalletId = c.WalletId,
                             Transactionid = c.Transactionid,
                             Amount = c.Amount,
                             UserId = c.UserId,
+                            WalletId = c.WalletId,
                             Reference = c.Reference,
                             Email = c.Email,
                             AccountName = c.AccountName,
@@ -280,22 +280,23 @@ namespace Payment_Gateway.BLL.Implementation
 
 
 
-        public async Task<ServiceResponse<IEnumerable<Transaction>>> GetCreditTransactions(string walletId)
+        public async Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string walletId)
         {
             var user = await _userRepo.GetSingleByAsync(p => p.WalletId.ToString() == walletId, include: e => e.Include(e => e.Wallet), tracking: true);
             if (user == null)
             {
-                return new ServiceResponse<IEnumerable<Transaction>>
+                return new ServiceResponse<IEnumerable<Payin>>
                 {
                     Message = "User Not Founf",
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false,
                 };
             }
-            var result = user.Wallet.TransactionHistory.CreditTransactionList.Select(u => new Transaction
+            var result = user.Wallet.TransactionHistory.CreditTransactionList.Select(u => new Payin
             {
                 Transactionid = u.Transactionid,
                 Amount = u.Amount,
+                WalletId = u.WalletId,
                 AccountName = u.AccountName,
                 Bank = u.Bank,
                 Reference = u.Reference,
@@ -304,7 +305,7 @@ namespace Payment_Gateway.BLL.Implementation
                 PaidAt = u.PaidAt,
             });
 
-            return new ServiceResponse<IEnumerable<Transaction>>
+            return new ServiceResponse<IEnumerable<Payin>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Success = true,

@@ -9,9 +9,9 @@ namespace Payment_Gateway.BLL.Interfaces.IServices
     {
         Task<ServiceResponse<UserDto>> GetUserBalance(string userId);
         Task<ServiceResponse<UserDto>> GetUserDetails(string userId);
-        Task<ServiceResponse<IEnumerable<TransactionHistory>>> GetTransactionsDetails(string userId);
+        Task<ServiceResponse<ICollection<TransactionHistory>>> GetTransactionsDetails(string userId);
         Task<IEnumerable<TransactionResponse>> GetAllTransactions(string walletId);
         Task<ServiceResponse<IEnumerable<Payout>>> GetDebitTransactions(string userId);
-        Task<ServiceResponse<IEnumerable<Transaction>>> GetCreditTransactions(string userId);
+        Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string userId);
     }
 }

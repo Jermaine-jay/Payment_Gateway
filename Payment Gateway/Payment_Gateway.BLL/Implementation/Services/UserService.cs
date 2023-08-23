@@ -95,12 +95,12 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
 
 
-        public async Task<ServiceResponse<IEnumerable<TransactionHistory>>> GetTransactionsDetails(string userId)
+        public async Task<ServiceResponse<ICollection<TransactionHistory>>> GetTransactionsDetails(string userId)
         {
             var user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
             if(user == null)
             {
-                return new ServiceResponse<IEnumerable<TransactionHistory>>
+                return new ServiceResponse<ICollection<TransactionHistory>>
                 {
                     Message = "User Not Found",
                     StatusCode = HttpStatusCode.NotFound,
@@ -111,7 +111,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
             var transac = await _transRepo.GetByAsync(u => u.WalletId == user.WalletId);
             if(transac == null)
             {
-                return new ServiceResponse<IEnumerable<TransactionHistory>>
+                return new ServiceResponse<ICollection<TransactionHistory>>
                 {
                     Message = "No Transactions Found",
                     StatusCode = HttpStatusCode.NotFound,
@@ -136,11 +136,10 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     Responsestatus = d.Responsestatus,
                     Status = d.Status,
                     CreatedAt = d.CreatedAt,
-                }),
+                }).ToList(),
 
-                CreditTransactionList = e.CreditTransactionList.Select(c => new Transaction
+                CreditTransactionList = e.CreditTransactionList.Select(c => new Payin
                 {
-                    WalletId = c.WalletId,
                     Transactionid = c.Transactionid,
                     Amount = c.Amount,
                     UserId = c.UserId,
@@ -152,15 +151,15 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     GatewayResponse = c.GatewayResponse,
                     CreatedAt = c.CreatedAt,
                     PaidAt = c.PaidAt,
-                }),
+                }).ToList(),
             });
 
-            return new ServiceResponse<IEnumerable<TransactionHistory>>
+            return new ServiceResponse<ICollection<TransactionHistory>>
             {
                 Message = "User Not Found",
                 StatusCode = HttpStatusCode.NotFound,
                 Success = true,
-                Data = result
+                Data = (ICollection<TransactionHistory>)result
             };
         }
 
@@ -196,19 +195,19 @@ namespace Payment_Gateway.BLL.Implementation.Services
         }
 
 
-        public async Task<ServiceResponse<IEnumerable<Transaction>>> GetCreditTransactions(string userId)
+        public async Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string userId)
         {
             var user = await _userRepo.GetSingleByAsync(p => p.Id.ToString() == userId, include: e => e.Include(e => e.Wallet), tracking: true);
             if (user == null)
             {
-                return new ServiceResponse<IEnumerable<Transaction>>
+                return new ServiceResponse<IEnumerable<Payin>>
                 {
                     Message = "User Not Founf",
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false,
                 };
             }
-            var result = user.Wallet.TransactionHistory.CreditTransactionList.Select(u => new Transaction
+            var result = user.Wallet.TransactionHistory.CreditTransactionList.Select(u => new Payin
             {
                 Transactionid = u.Transactionid,
                 Amount = u.Amount,
@@ -220,7 +219,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 PaidAt = u.PaidAt,
             });
 
-            return new ServiceResponse<IEnumerable<Transaction>>
+            return new ServiceResponse<IEnumerable<Payin>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Success = true,

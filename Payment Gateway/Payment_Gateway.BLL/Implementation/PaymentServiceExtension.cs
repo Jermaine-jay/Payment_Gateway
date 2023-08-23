@@ -10,7 +10,7 @@ namespace Payment_Gateway.BLL.Implementation
     internal class PaymentServiceExtension : IPaymentServiceExtension
     {
         private readonly IRepository<ApplicationUser> _appuserRepo;
-        private readonly IRepository<Transaction> _transaactionRepo;
+        private readonly IRepository<Payin> _PayinnRepo;
         private readonly IRepository<TransactionHistory> _transaactionHisRepo;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -32,15 +32,13 @@ namespace Payment_Gateway.BLL.Implementation
             {
                 var history = new TransactionHistory()
                 {
-                   Id = Guid.NewGuid(),
                     WalletId = user.WalletId,
-                    CreditTransactionList = new List<Transaction>()
+                    CreditTransactionList = new List<Payin>()
                     {
-                        new Transaction
+                        new Payin
                         {
-                            Id = Guid.NewGuid(),
-                            WalletId = user.WalletId,
                             UserId = user.Id.ToString(),
+                            WalletId = user.WalletId.ToString(),
                             Reference = response.data.reference,
                             Amount = response.data.amount,
                             AccountName = response.data.authorization.account_name,

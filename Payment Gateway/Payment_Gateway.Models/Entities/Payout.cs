@@ -5,10 +5,8 @@ namespace Payment_Gateway.Models.Entities
     public class Payout
     {
         [Key]
-        public Guid Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string payoutId { get; set; }
-
-        [DataType(DataType.Currency)]
         public long Amount { get; set; }
         public string? Reason { get; set; }
         public string? Recipient { get; set; }
@@ -20,6 +18,6 @@ namespace Payment_Gateway.Models.Entities
         public string? WalletId { get; set; }
         public string? CreatedAt { get; set; }
 
-        public TransactionHistory? TransactionHistory { get; set; }
+        //public TransactionHistory? TransactionHistory { get; set; }
     }
 }

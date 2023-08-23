@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Payment_Gateway.Models.Entities;
 
@@ -17,7 +16,7 @@ namespace Payment_Gateway.DAL.Context
 
         public DbSet<Admin> Admins { get; set; }
         public DbSet<AdminProfile> AdminProfiles { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Payin> Payins { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<Payout> Payouts { get; set; }
@@ -28,7 +27,6 @@ namespace Payment_Gateway.DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Wallet>()
                .HasKey(a => a.WalletId);
@@ -36,20 +34,20 @@ namespace Payment_Gateway.DAL.Context
 
             modelBuilder.Entity<TransactionHistory>()
                .HasKey(a => a.Id);
+            
 
             modelBuilder.Entity<Payout>()
                 .HasKey(a => a.Id);
 
 
-            modelBuilder.Entity<Transaction>()
+            modelBuilder.Entity<Payin>()
                 .HasKey(a => a.Id);
 
             modelBuilder.Entity<Wallet>(p =>
             {
-                p.Property(p => p.WalletId)
-                    .ValueGeneratedOnAdd();
                 p.Property(p => p.Balance)
                     .HasDefaultValue(0);
+
             });
 
 
@@ -60,56 +58,55 @@ namespace Payment_Gateway.DAL.Context
 
             modelBuilder.Entity<ApiKey>(p =>
             {
-                p.Property(p => p.ApiSecretKey)
-                    .ValueGeneratedOnAdd();
                 p.HasKey(p => p.ApiSecretKey);
+                
             });
 
 
             modelBuilder.Entity<ApiKey>()
                 .HasOne(a => a.ApplicationUser)
-                .WithOne(u => u.ApiKey)
+                .WithOne()
                 .HasForeignKey<ApplicationUser>(u => u.ApiSecretKey)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<Wallet>()
-                .HasOne(a => a.ApplicationUser)
-                .WithOne(u => u.Wallet)
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.Wallet)
+                .WithOne(u=>u.ApplicationUser)
                 .HasForeignKey<ApplicationUser>(u => u.WalletId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<Wallet>()
-                .HasOne(a => a.TransactionHistory)
-                .WithOne(u => u.Wallet)
-                .HasForeignKey<TransactionHistory>(u => u.WalletId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<TransactionHistory>()
+                 .HasOne(t => t.Wallet)   
+                 .WithOne(w => w.TransactionHistory)      
+                 .HasForeignKey<TransactionHistory>(t => t.WalletId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            
+        
+            /* modelBuilder.Entity<Payin>()
+                 .HasOne(a => a.TransactionHistory)
+                 .WithMany(u => u.CreditTransactionList)
+                 .HasForeignKey(u => u.Id)
+                 .OnDelete(DeleteBehavior.Restrict);
 
 
-
-            modelBuilder.Entity<Transaction>()
-                .HasOne(a => a.TransactionHistory)
-                .WithMany(u => u.CreditTransactionList)
-                .HasForeignKey(u => u.Id)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-            modelBuilder.Entity<Payout>()
-                .HasOne(a => a.TransactionHistory)
-                .WithMany(u => u.DebitTransactionList)
-                .HasForeignKey(u => u.Id)
-                .OnDelete(DeleteBehavior.Cascade);
+             modelBuilder.Entity<Payout>()
+                 .HasOne(a => a.TransactionHistory)
+                 .WithMany(u => u.DebitTransactionList)
+                 .HasForeignKey(u => u.Id)
+                 .OnDelete(DeleteBehavior.Restrict);*/
 
 
-            modelBuilder.Entity<ApplicationRole>(b =>
-            {
-                b.HasMany<ApplicationUserRole>()
-                .WithOne()
-                .HasForeignKey(ur => ur.RoleId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
-            });
+                    modelBuilder.Entity<ApplicationRole>(b =>
+                    {
+                        b.HasMany<ApplicationUserRole>()
+                        .WithOne()
+                        .HasForeignKey(ur => ur.RoleId)
+                        .IsRequired()
+                        .OnDelete(DeleteBehavior.NoAction);
+                    });
 
 
             modelBuilder.Entity<ApplicationUser>(b =>
@@ -119,7 +116,10 @@ namespace Payment_Gateway.DAL.Context
                .HasForeignKey(ur => ur.UserId)
                .IsRequired()
                .OnDelete(DeleteBehavior.Cascade);
-            });             
+            });
+
+            base.OnModelCreating(modelBuilder);
         }
+
     }
 }

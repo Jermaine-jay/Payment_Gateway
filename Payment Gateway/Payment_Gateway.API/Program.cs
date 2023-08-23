@@ -102,20 +102,16 @@ namespace Payment_Gateway.API
             });
 
             //app.UseCors("AllowAll");
-
             //app.UseMiddleware<ApiKeyMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            /*app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers().RequireAuthorization("Authorization");
-            });*/
+            app.UseEndpoints(endpoints => { endpoints.MapControllers();});
             app.MapControllers();
             app.SeedRole();
             app.SeededUserAsync().Wait();
+            app.EnsurePopulatedAsync().Wait();
 
             app.Run();
         }

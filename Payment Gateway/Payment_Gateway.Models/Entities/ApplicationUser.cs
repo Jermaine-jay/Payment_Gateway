@@ -18,7 +18,7 @@ namespace Payment_Gateway.Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
 
-        [ForeignKey("Wallet")]
+        [ForeignKey(nameof(Wallet))]
         public string? WalletId { get; set; }
         public Wallet? Wallet { get; set; }
 
