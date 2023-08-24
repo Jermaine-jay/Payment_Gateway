@@ -6,8 +6,7 @@ namespace Payment_Gateway.Models.Entities
     public class ApiKey
     {
         [Key]
-        public string ApiSecretKey { get; set; } = GenerateApiKey.GenerateAnApiKey();
-
+        public string ApiSecretKey { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
     }
 }

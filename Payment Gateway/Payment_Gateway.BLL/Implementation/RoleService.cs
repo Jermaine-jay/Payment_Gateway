@@ -17,7 +17,6 @@ namespace Payment_Gateway.BLL.Implementation
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IServiceFactory _serviceFactory;
-        private readonly IMapper _mapper;
         private readonly IRepository<ApplicationRole> _roleRepo;
         private readonly IRepository<ApplicationRoleClaim> _roleClaimRepo;
         private readonly IUnitOfWork _unitOfWork;
@@ -31,7 +30,6 @@ namespace Payment_Gateway.BLL.Implementation
             _roleManager = _serviceFactory.GetService<RoleManager<ApplicationRole>>();
             _roleRepo = _unitOfWork.GetRepository<ApplicationRole>();
             _roleClaimRepo = _unitOfWork.GetRepository<ApplicationRoleClaim>();
-            _mapper = _serviceFactory.GetService<IMapper>();
         }
 
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Infrastructure;
@@ -9,6 +8,7 @@ using Payment_Gateway.BLL.Paystack.Interfaces;
 using Payment_Gateway.Shared.DataTransferObjects.Request;
 using Payment_Gateway.Shared.DataTransferObjects.Response;
 using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace Payment_Gateway.API.Controllers
 {
@@ -30,9 +30,9 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        
+
         //[Route("list-bank")]
-        [HttpGet("available-banks", Name ="available-banks")]
+        [HttpGet("available-banks", Name = "available-banks")]
         [SwaggerOperation(Summary = "Select preferred bank")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Payment successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Payment failed", Type = typeof(ErrorResponse))]
@@ -100,7 +100,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-       
+
         //[Route("finalize-transfer")]
         [HttpPost("finalize-payment", Name = "finalize-payment")]
         [SwaggerOperation(Summary = "Makes payment using paystack")]

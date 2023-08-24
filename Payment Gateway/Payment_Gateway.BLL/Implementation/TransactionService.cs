@@ -4,14 +4,14 @@ using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.DAL.Interfaces;
 using Payment_Gateway.Models.Entities;
+using Payment_Gateway.Shared.DataTransferObjects.Request;
 using System.Net;
 
-namespace Payment_Gateway.BLL.Implementation
+namespace Payment_Gateway.Shared.DataTransferObjects
 {
     public class TransactionService : ITransactionService
     {
         private readonly IServiceFactory _serviceFactory;
-        private readonly IMapper _mapper;
         private readonly IRepository<TransactionHistory> _transRepo;
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IRepository<Wallet> _walletRepo;
@@ -23,7 +23,6 @@ namespace Payment_Gateway.BLL.Implementation
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
             _unitOfWork = _serviceFactory.GetService<IUnitOfWork>();
-            _mapper = _serviceFactory.GetService<IMapper>();
             _transRepo = _unitOfWork.GetRepository<TransactionHistory>();
             _walletRepo = _unitOfWork.GetRepository<Wallet>();
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
@@ -158,9 +157,9 @@ namespace Payment_Gateway.BLL.Implementation
                 e => e.WalletId,
                 (u, e) => new
                 {
-                    WalletId = e.WalletId,
-                    UserName = u.UserName,
-                    Balance = e.Balance
+                    e.WalletId,
+                    u.UserName,
+                    e.Balance
                 }).Join(await _transRepo.GetAllAsync(),
                     u => u.WalletId,
                     e => e.WalletId,
@@ -216,7 +215,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task<ServiceResponse<IEnumerable<Payout>>> GetDebitTransactions(string walletId)
         {
             var user = await _userRepo.GetByAsync(p => p.WalletId.ToString() == walletId);
@@ -234,8 +232,8 @@ namespace Payment_Gateway.BLL.Implementation
                 u => u.WalletId,
                 e => e.WalletId, (u, e) => new
                 {
-                    Id = u.Id,
-                    WalletId = e.WalletId,
+                    u.Id,
+                    e.WalletId,
                 }).Join(await _transRepo.GetAllAsync(),
             u => u.WalletId,
             e => e.WalletId,
@@ -279,7 +277,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string walletId)
         {
             var user = await _userRepo.GetSingleByAsync(p => p.WalletId.ToString() == walletId, include: e => e.Include(e => e.Wallet), tracking: true);
@@ -313,60 +310,6 @@ namespace Payment_Gateway.BLL.Implementation
             };
         }
 
-      
-    }
 
-
-
-    public class TransactionHistoryDto
-    {
-        public string? Transactionid { get; set; }
-        public string? WalletId { get; set; }
-
-        public IEnumerable<PayoutDto> DebitTransactionList { get; set; }
-        public IEnumerable<TransactionResponse> CreditTransactionList { get; set; }
-    }
-
-    public class PayoutDto
-    {
-        public string? Id { get; set; }
-        public string? payoutId { get; set; }
-        public long Amount { get; set; }
-        public string? Reason { get; set; }
-        public string? Recipient { get; set; }
-        public string? Reference { get; set; }
-        public string? Currency { get; set; }
-        public string? Source { get; set; }
-        public bool? Responsestatus { get; set; }
-        public string? Status { get; set; }
-        public string? WalletId { get; set; }
-        public string? CreatedAt { get; set; }
-    }
-
-    public class TransactionResponse
-    {
-        public string? Id { get; set; }
-        public string Transactionid { get; set; }
-        public long Amount { get; set; }
-        public string UserId { get; set; }
-        public string Reference { get; set; }
-        public string? Email { get; set; }
-        public string AccountName { get; set; }
-        public string Bank { get; set; }
-        public string? Status { get; set; }
-        public string? GatewayResponse { get; set; }
-        public string? CreatedAt { get; set; }
-        public string? PaidAt { get; set; }
-        public string? AuthorizationCode { get; set; }
-        public string? WalletId { get; set; }
-        public string? IpAddress { get; set; }
-        public string? Channel { get; set; }
-        public string CardType { get; set; }
-    }
-
-    public class GetTransactionRequest
-    {
-        public string? WalletId { get; set; }
-        public string? IransactionId { get; set; }
     }
 }

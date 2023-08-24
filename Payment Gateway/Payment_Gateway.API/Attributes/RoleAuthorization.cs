@@ -5,7 +5,6 @@ using Payment_Gateway.Models.Entities;
 using System.Security.Claims;
 
 
-
 namespace Payment_Gateway.API.Attribute
 {
     public class AuthHandler : AuthorizationHandler<AuthRequirement>
@@ -35,7 +34,6 @@ namespace Payment_Gateway.API.Attribute
             List<ApplicationRoleClaim> _roleClaims = new();
 
             var isAuthenticatedUser = context.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier);
-
             if (!isAuthenticatedUser)
             {
                 throw new UnauthorizedAccessException("User Not Authenticated");
@@ -46,6 +44,7 @@ namespace Payment_Gateway.API.Attribute
             {
                 throw new UnauthorizedAccessException("UnAuthenticated");
             }
+
             var endpoint = _httpContextAccessor.HttpContext.GetEndpoint();
             var routeName = endpoint?.Metadata.GetMetadata<EndpointNameMetadata>().EndpointName;
 
@@ -55,10 +54,10 @@ namespace Payment_Gateway.API.Attribute
             {
                 throw new InvalidOperationException("User not found");
             }
+
             var userRoles = await _userManager.GetRolesAsync(user);
             foreach (var role in userRoles)
             {
-
                 var userRole = await _roleRepository.GetSingleByAsync(x => x.Name == role);
                 var roleClaims = await _roleClaimsManager.GetByAsync(x => x.RoleId == userRole.Id);
 
@@ -68,10 +67,9 @@ namespace Payment_Gateway.API.Attribute
                     {
                         _roleClaims.Add(item);
                     }
-
                 }
-
             }
+
 
             if (!_roleClaims.Any(claim => claim.ClaimType == routeName))
             {

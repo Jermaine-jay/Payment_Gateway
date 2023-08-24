@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Payment_Gateway.DAL.Context;
 using Payment_Gateway.DAL.Interfaces;
 using Payment_Gateway.Models.Entities;
-using System.Transactions;
 
 namespace Payment_Gateway.DAL.Seeds
 {
@@ -20,7 +19,6 @@ namespace Payment_Gateway.DAL.Seeds
 
             using (var scope = app.ApplicationServices.CreateScope())
             {
-                //IRepository<Wallet> wallet = scope.ServiceProvider.GetRequiredService<IRepository<Wallet>>();
                 UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 ApplicationUser jo = await userManager.FindByNameAsync("Jota10");
                 ApplicationUser jer = await userManager.FindByNameAsync("Jermaine10");
@@ -29,24 +27,15 @@ namespace Payment_Gateway.DAL.Seeds
 
 
                 IUnitOfWork work = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                var user1 = await work.GetRepository<Wallet>().GetByIdAsync("2238365066");
-                var user2 = await work.GetRepository<Wallet>().GetByIdAsync("2522877873");
-                var user3 = await work.GetRepository<Wallet>().GetByIdAsync("2464787574");
 
-            if (!await context.TransactionHistory.AnyAsync())
-            {
-                await context.TransactionHistory.AddRangeAsync(TransactionHistory(jo));
-                await context.TransactionHistory.AddRangeAsync(TransactionHistory2(jer));
-                await context.TransactionHistory.AddRangeAsync(TransactionHistory3(sah));
-                await context.TransactionHistory.AddRangeAsync(TransactionHistory3(ibou));
-                await context.SaveChangesAsync();
-            }
-
-
-               /* foreach (var transaction in TransactionHistory())
+                if (!await context.TransactionHistory.AnyAsync())
                 {
-                    work.GetRepository<TransactionHistory>().Add(transaction);
-                }*/
+                    await context.TransactionHistory.AddRangeAsync(TransactionHistory(jo));
+                    await context.TransactionHistory.AddRangeAsync(TransactionHistory2(jer));
+                    await context.TransactionHistory.AddRangeAsync(TransactionHistory3(sah));
+                    await context.TransactionHistory.AddRangeAsync(TransactionHistory3(ibou));
+                    await context.SaveChangesAsync();
+                }
             }
         }
 
@@ -57,7 +46,7 @@ namespace Payment_Gateway.DAL.Seeds
             {
                 new TransactionHistory()
                 {
-    
+
                     WalletId = wallet.WalletId,
                     Wallet = wallet.Wallet,
                     IsActive = true,
@@ -66,7 +55,7 @@ namespace Payment_Gateway.DAL.Seeds
                     {
                         new Payout()
                         {
-    
+
                             payoutId = "00001",
                             Amount = 5000,
                             Reason = "Bought Ps5",
@@ -113,7 +102,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                         new Payout()
                         {
-             
+
                             payoutId = "00004",
                             Amount = 15000,
                             Reason = "Bought a chopper",
@@ -131,7 +120,7 @@ namespace Payment_Gateway.DAL.Seeds
                    {
                        new Payin
                        {
-                     
+
                            Transactionid = "00551",
                            Amount = 10000,
                            UserId = "ezeh livinus",
@@ -150,7 +139,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                        new Payin
                        {
-               
+
                            Transactionid = "000432",
                            Amount = 16000,
                            UserId = "chef dave",
@@ -169,7 +158,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                        new Payin
                        {
-                   
+
                            Transactionid = "006603",
                            Amount = 10000,
                            UserId = "Ben Ezeh",
@@ -188,7 +177,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                        new Payin
                        {
-            
+
                            Transactionid = "056701",
                            Amount = 10000,
                            UserId = "Emelogu Ikechukwu",
@@ -209,6 +198,8 @@ namespace Payment_Gateway.DAL.Seeds
 
             };
         }
+
+
         private static IEnumerable<TransactionHistory> TransactionHistory2(ApplicationUser applicationUser)
         {
             return new List<TransactionHistory>()
@@ -216,9 +207,9 @@ namespace Payment_Gateway.DAL.Seeds
 
                 new TransactionHistory()
                 {
-        
+
                     WalletId = applicationUser.WalletId,
-                     Wallet = applicationUser.Wallet,
+                    Wallet = applicationUser.Wallet,
                     IsActive = true,
                     CreatedAt = DateTime.Now,
                     DebitTransactionList = new List<Payout>
@@ -240,7 +231,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                         new Payout()
                         {
-     
+
                             payoutId = "00002",
                             Amount = 10000,
                             Reason = "Bought a ferrari",
@@ -256,7 +247,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                         new Payout()
                         {
-     
+
                             payoutId = "00003",
                             Amount = 15000,
                             Reason = "School Fees",
@@ -271,7 +262,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                         new Payout()
                         {
-  
+
                             payoutId = "00004",
                             Amount = 150000,
                             Reason = "Acceptance Fee",
@@ -327,7 +318,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                        new Payin
                        {
-     
+
                            Transactionid = "04033",
                            Amount = 10000,
                            UserId = "Bello Saliu",
@@ -366,15 +357,17 @@ namespace Payment_Gateway.DAL.Seeds
                 },
             };
         }
+
+
         private static IEnumerable<TransactionHistory> TransactionHistory3(ApplicationUser wallet)
         {
             return new List<TransactionHistory>()
             {
                 new TransactionHistory()
                 {
-                  
+
                     WalletId = wallet.WalletId,
-                     Wallet = wallet.Wallet,
+                    Wallet = wallet.Wallet,
                     IsActive = true,
                     CreatedAt = DateTime.Now,
                     DebitTransactionList = new List<Payout>
@@ -512,7 +505,7 @@ namespace Payment_Gateway.DAL.Seeds
                            Channel = "Card",
                        },
                    }
-                    
+
                 },
 
             };

@@ -23,6 +23,7 @@ using Payment_Gateway.DAL.Context;
 using Payment_Gateway.DAL.Implementation;
 using Payment_Gateway.DAL.Interfaces;
 using Payment_Gateway.Models.Entities;
+using Payment_Gateway.Shared.DataTransferObjects;
 using StackExchange.Redis;
 using System.Security.Authentication;
 using System.Text;
@@ -162,6 +163,7 @@ namespace Payment_Gateway.API.Extensions
             services.AddRedisCache(redisConfig);
 
             services.ConfigureMiddleware();
+
         }
 
 

@@ -24,6 +24,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public AdminServices(IUnitOfWork unitOfWork, IPaystackPostRequest paystackPostRequest, PaystackConfig paystackConfig)
         {
+            _unitOfWork = unitOfWork;
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
             _walletRepo = _unitOfWork.GetRepository<Wallet>();
             _paystackPostRequest = paystackPostRequest;

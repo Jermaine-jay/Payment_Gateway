@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Infrastructure.Otp;
 using Payment_Gateway.BLL.Interfaces;
@@ -9,8 +10,10 @@ using Payment_Gateway.Models.Enums;
 using Payment_Gateway.Models.Extensions;
 using Payment_Gateway.Shared.DataTransferObjects.Requests;
 using Payment_Gateway.Shared.DataTransferObjects.Response;
+using System.Linq.Dynamic.Core;
 using System.Net;
 using System.Text;
+
 
 namespace Payment_Gateway.BLL.Implementation
 {
@@ -19,10 +22,7 @@ namespace Payment_Gateway.BLL.Implementation
         private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceFactory _serviceFactory;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IRepository<ApplicationRoleClaim> _roleClaimsRepo;
         private readonly IRepository<ApplicationUser> _userRepo;
-        private readonly IRepository<ApiKey> _apiKeyRepo;
-        private readonly IRoleService _roleService;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
 
@@ -33,9 +33,7 @@ namespace Payment_Gateway.BLL.Implementation
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
-            _roleClaimsRepo = _unitOfWork.GetRepository<ApplicationRoleClaim>();
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
-            _apiKeyRepo = _unitOfWork.GetRepository<ApiKey>();
         }
 
 
@@ -89,7 +87,10 @@ namespace Payment_Gateway.BLL.Implementation
                     WalletId = AccountNumberGenerator.GenerateRandomNumber(),
                     Balance = 0,
                 },
-                ApiKey = new ApiKey(),
+                ApiKey = new ApiKey()
+                {
+                    ApiSecretKey = GenerateApiKey.GenerateAnApiKey()
+                },
                 UserType = UserType.User,
             };
 
@@ -552,46 +553,52 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-        public async Task UpdateRecoveryEmail(string userId, string email)
+        public async Task<ServiceResponse> UpdateRecoveryEmail(string userId, string email)
         {
 
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
-
             if (user == null)
             {
-                throw new InvalidOperationException("User not found!");
+                return new ServiceResponse
+                {
+                    Message = $"The user with {nameof(userId)}: {userId} doesn't exist in the database.",
+                    StatusCode = HttpStatusCode.NotFound,
+                };
             }
 
             user.RecoveryMail = email;
             await _userManager.UpdateAsync(user);
-
-            //Log.ForContext(new PropertyBagEnricher().Add("RecoveryEmail", email))
-            //    .Information("Recovery Mail Updated Successfully");
+            return new ServiceResponse
+            {
+                StatusCode = HttpStatusCode.OK,
+            };
         }
 
 
-
-        public async Task ToggleUserActivation(string userId)
+        public async Task<ServiceResponse> ToggleUserActivation(string userId)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
-
             if (user == null)
             {
-                throw new InvalidOperationException($"The user with {nameof(userId)}: {userId} doesn't exist in the database.");
+                return new ServiceResponse
+                {
+                    Message = $"The user with {nameof(userId)}: {userId} doesn't exist in the database.",
+                    StatusCode = HttpStatusCode.BadRequest,
+                };
             }
+
             user.Active = !user.Active;
-
             await _userManager.UpdateAsync(user);
-
-            //Log.ForContext(new PropertyBagEnricher().Add("ToggleState", user.Active)
-            //).Information("User activation toggle successful");
+            return new ServiceResponse
+            {
+                StatusCode = HttpStatusCode.OK,
+            };
         }
-
 
 
         public async Task<ApplicationUser> GetApiKey(string apiKey)
         {
-            var getUser = await _userRepo.GetAllAsync();
+            var getUser = await _userRepo.GetAllAsync(include: u => u.Include(p => p.ApiKey));
             var user = getUser.Where(u => u.ApiSecretKey == apiKey).FirstOrDefault();
             if (user == null)
             {
@@ -599,6 +606,5 @@ namespace Payment_Gateway.BLL.Implementation
             }
             return user;
         }
-
     }
 }

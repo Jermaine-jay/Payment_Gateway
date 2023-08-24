@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="PaystackModel\" />
+    <Compile Remove="PaystackModel\**" />
+    <EmbeddedResource Remove="PaystackModel\**" />
+    <None Remove="PaystackModel\**" />
   </ItemGroup>
 
   <ItemGroup>

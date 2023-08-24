@@ -15,7 +15,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
     {
         private readonly IServiceFactory _serviceFactory;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IMapper _mapper;
         private readonly IRepository<TransactionHistory> _transRepo;
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly IRepository<Wallet> _walletRepo;
@@ -27,7 +26,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
             _userManager = userManager;
-            _mapper = _serviceFactory.GetService<IMapper>();
             _transRepo = _unitOfWork.GetRepository<TransactionHistory>();
             _walletRepo = _unitOfWork.GetRepository<Wallet>();
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();

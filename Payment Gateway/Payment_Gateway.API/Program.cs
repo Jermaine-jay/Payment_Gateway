@@ -109,9 +109,9 @@ namespace Payment_Gateway.API
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers();});
             app.MapControllers();
-            app.SeedRole();
+            /*app.SeedRole();
             app.SeededUserAsync().Wait();
-            app.EnsurePopulatedAsync().Wait();
+            app.EnsurePopulatedAsync().Wait();*/
 
             app.Run();
         }

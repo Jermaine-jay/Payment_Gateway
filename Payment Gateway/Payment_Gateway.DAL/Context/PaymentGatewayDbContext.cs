@@ -34,6 +34,10 @@ namespace Payment_Gateway.DAL.Context
 
             modelBuilder.Entity<TransactionHistory>()
                .HasKey(a => a.Id);
+
+
+            modelBuilder.Entity<ApiKey>()          
+                .HasKey(p => p.ApiSecretKey);
             
 
             modelBuilder.Entity<Payout>()
@@ -56,16 +60,10 @@ namespace Payment_Gateway.DAL.Context
                 .HasPrecision(18, 2);
 
 
-            modelBuilder.Entity<ApiKey>(p =>
-            {
-                p.HasKey(p => p.ApiSecretKey);
                 
-            });
-
-
-            modelBuilder.Entity<ApiKey>()
-                .HasOne(a => a.ApplicationUser)
-                .WithOne()
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.ApiKey)
+                .WithOne(u=>u.ApplicationUser)
                 .HasForeignKey<ApplicationUser>(u => u.ApiSecretKey)
                 .OnDelete(DeleteBehavior.Cascade);
 

@@ -80,7 +80,10 @@ namespace Payment_Gateway.DAL.Seeds
                         WalletId = AccountNumberGenerator.GenerateRandomNumber(),
                         Balance = 0,
                     },
-                    ApiKey = new ApiKey(),
+                    ApiKey = new ApiKey()
+                    {
+                        ApiSecretKey = GenerateApiKey.GenerateAnApiKey()
+                    },
                     UserType = UserType.User,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true
@@ -101,7 +104,11 @@ namespace Payment_Gateway.DAL.Seeds
                         WalletId = AccountNumberGenerator.GenerateRandomNumber(),
                         Balance = 0,
                     },
-                    ApiKey = new ApiKey(),
+
+                    ApiKey = new ApiKey()
+                    {
+                        ApiSecretKey = GenerateApiKey.GenerateAnApiKey()
+                    },
                     UserType = UserType.SuperAdmin,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true
@@ -122,7 +129,11 @@ namespace Payment_Gateway.DAL.Seeds
                         WalletId = AccountNumberGenerator.GenerateRandomNumber(),
                         Balance = 0,
                     },
-                    ApiKey = new ApiKey(),
+
+                    ApiKey = new ApiKey()
+                    {
+                        ApiSecretKey = GenerateApiKey.GenerateAnApiKey()
+                    },
                     UserType = UserType.Admin,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true
@@ -143,7 +154,12 @@ namespace Payment_Gateway.DAL.Seeds
                         WalletId = AccountNumberGenerator.GenerateRandomNumber(),
                         Balance = 0,
                     },
-                    ApiKey = new ApiKey(),
+
+                    ApiKey = new ApiKey()
+                    {
+                        ApiSecretKey = GenerateApiKey.GenerateAnApiKey()
+                    },
+
                     UserType = UserType.ThirdParty,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true

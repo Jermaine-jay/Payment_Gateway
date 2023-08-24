@@ -25,13 +25,5 @@ namespace Payment_Gateway.Models.Entities
         [ForeignKey("ApiKey")]
         public string? ApiSecretKey { get; set; }
         public ApiKey? ApiKey { get; set; }
-
-        //public ICollection<ApplicationUserRole> UserRoles { get; set; }
-
-        /* public ICollection<Transaction> Transactions { get; set; }
-         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
-         public virtual ICollection<IdentityUserLogin<Guid>> Logins { get; set; }
-         public virtual ICollection<IdentityUserToken<Guid>> Tokens { get; set; }
-         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }*/
     }
 }

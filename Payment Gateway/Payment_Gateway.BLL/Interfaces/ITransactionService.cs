@@ -1,6 +1,6 @@
 ﻿using Payment_Gateway.API.Extensions;
-using Payment_Gateway.BLL.Implementation;
 using Payment_Gateway.Models.Entities;
+using Payment_Gateway.Shared.DataTransferObjects.Request;
 
 namespace Payment_Gateway.BLL.Interfaces
 {

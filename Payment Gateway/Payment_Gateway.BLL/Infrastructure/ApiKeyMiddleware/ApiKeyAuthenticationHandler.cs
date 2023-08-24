@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using IAuthenticationService = Payment_Gateway.BLL.Interfaces.IAuthenticationService;
 
+
 namespace Payment_Gateway.BLL.Infrastructure.ApiKeyMiddleware
 {
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
@@ -49,6 +50,7 @@ namespace Payment_Gateway.BLL.Infrastructure.ApiKeyMiddleware
 
             return AuthenticateResult.Success(ticket);
         }
+
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
