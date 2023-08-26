@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Payment_Gateway.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class firstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,16 +59,30 @@ namespace Payment_Gateway.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TransactionHistory",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Wallets",
                 columns: table => new
                 {
                     WalletId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Balance = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    Balance = table.Column<long>(type: "bigint", nullable: false),
                     Currency = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TransactionHistoryId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -133,6 +147,69 @@ namespace Payment_Gateway.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Payins",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Transactionid = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Reference = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bank = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GatewayResponse = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AuthorizationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Channel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CardType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionHistoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payins", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payins_TransactionHistory_TransactionHistoryId",
+                        column: x => x.TransactionHistoryId,
+                        principalTable: "TransactionHistory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payouts",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    payoutId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<long>(type: "bigint", precision: 18, scale: 2, nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Recipient = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Reference = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Source = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Responsestatus = table.Column<bool>(type: "bit", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionHistoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payouts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payouts_TransactionHistory_TransactionHistoryId",
+                        column: x => x.TransactionHistoryId,
+                        principalTable: "TransactionHistory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -179,27 +256,6 @@ namespace Payment_Gateway.DAL.Migrations
                         principalTable: "Wallets",
                         principalColumn: "WalletId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TransactionHistory",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    WalletId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransactionHistory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TransactionHistory_Wallets_WalletId",
-                        column: x => x.WalletId,
-                        principalTable: "Wallets",
-                        principalColumn: "WalletId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -287,67 +343,6 @@ namespace Payment_Gateway.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Payins",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Transactionid = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Reference = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccountName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Bank = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GatewayResponse = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PaidAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AuthorizationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Channel = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CardType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TransactionHistoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payins", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payins_TransactionHistory_TransactionHistoryId",
-                        column: x => x.TransactionHistoryId,
-                        principalTable: "TransactionHistory",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Payouts",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    payoutId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<long>(type: "bigint", precision: 18, scale: 2, nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Recipient = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Reference = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Source = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Responsestatus = table.Column<bool>(type: "bit", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TransactionHistoryId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payouts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payouts_TransactionHistory_TransactionHistoryId",
-                        column: x => x.TransactionHistoryId,
-                        principalTable: "TransactionHistory",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AdminProfiles_AdminIdentity",
                 table: "AdminProfiles",
@@ -420,13 +415,6 @@ namespace Payment_Gateway.DAL.Migrations
                 name: "IX_Payouts_TransactionHistoryId",
                 table: "Payouts",
                 column: "TransactionHistoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TransactionHistory_WalletId",
-                table: "TransactionHistory",
-                column: "WalletId",
-                unique: true,
-                filter: "[WalletId] IS NOT NULL");
         }
 
         /// <inheritdoc />

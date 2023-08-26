@@ -44,17 +44,17 @@ namespace Payment_Gateway.DAL.Seeds
 
                 if (user2 != null)
                 {
-                    await userManager.AddToRolesAsync(user2, new[] {Admin});
+                    await userManager.AddToRolesAsync(user2, new[] { Admin });
                 }
 
                 if (user3 != null)
                 {
                     await userManager.AddToRolesAsync(user3, new[] { SuperAdmin });
-                } 
+                }
 
                 if (user4 != null)
                 {
-                    await userManager.AddToRolesAsync(user4, new[] {ThirdParty});
+                    await userManager.AddToRolesAsync(user4, new[] { ThirdParty });
                 }
             }
         }
@@ -167,5 +167,5 @@ namespace Payment_Gateway.DAL.Seeds
             };
         }
     }
-}
 
+}

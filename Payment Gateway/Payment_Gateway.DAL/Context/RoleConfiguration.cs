@@ -7,19 +7,21 @@ namespace Payment_Gateway.DAL
 {
     public static class RoleSeeder
     {
-        public static void SeedRole(this IApplicationBuilder app)
+        public static async Task SeedRole(this IApplicationBuilder app)
         {
-
-            PaymentGatewayDbContext context = app.ApplicationServices.CreateScope().ServiceProvider
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                PaymentGatewayDbContext context = scope.ServiceProvider
                     .GetRequiredService<PaymentGatewayDbContext>();
 
-            context.Database.EnsureCreated();
-            var roleExist = context.Roles.Any();
+                context.Database.EnsureCreated();
+                var roleExist = context.Roles.Any();
 
-            if (!roleExist)
-            {
-                context.Roles.AddRange(SeededRoles());
-                context.SaveChanges();
+                if (!roleExist)
+                {
+                    context.Roles.AddRange(SeededRoles());
+                    context.SaveChanges();
+                }
             }
         }
 

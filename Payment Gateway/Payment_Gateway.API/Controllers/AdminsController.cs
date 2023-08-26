@@ -8,8 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Payment_Gateway.API.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("api/admins")]
     public class AdminsController : ControllerBase
     {
         private readonly IAdminServices _adminServices;
@@ -112,14 +112,14 @@ namespace Payment_Gateway.API.Controllers
 
         //[Authorize]
         //[Route("list-bank")]
-        [HttpGet("GetUser", Name ="Get-User")]
-        [SwaggerOperation(Summary = "Get A Registered User")]
+        [HttpGet("Get-User", Name ="Get-User")]
+        [SwaggerOperation(Summary = "Get A Registered User with walletId")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUser(string userId)
+        public async Task<IActionResult> GetUser()
         {
-            var response = await _adminServices.GetUser(userId);
+            var response = await _adminServices.GetUser("2018738891");
             if (response.Success)
                 return Ok(response);
 
@@ -135,9 +135,9 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUserDetails(string userId)
+        public async Task<IActionResult> GetUserDetails(string walletId)
         {
-            var response = await _adminServices.GetUserDetails(userId);
+            var response = await _adminServices.GetUserDetails(walletId);
             if (response.Success)
                 return Ok(response);
 
@@ -155,11 +155,11 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetUserTransactions(string walletId)
         {
-            var response = await _transactionServices.GetTransactionsDetails(walletId);
-            if (response.Success)
+            var response = await _transactionServices.GetUsersTransactionHistory();
+            //if (response.Success)
                 return Ok(response);
 
-            return BadRequest(response);
+            //return BadRequest(response);
         }
 
 
@@ -171,9 +171,14 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UserTransaction([FromBody] GetTransactionRequest request)
+        public async Task<IActionResult> UserTransaction(string TransactionId, string request)
         {
-            var response = await _transactionServices.GetTransaction(request);
+            var send = new GetTransactionRequest
+            {
+                TransactionId = TransactionId,
+                WalletId = request
+            };
+            var response = await _transactionServices.GetTransaction(send);
             if (response.Success)
                 return Ok(response);
 

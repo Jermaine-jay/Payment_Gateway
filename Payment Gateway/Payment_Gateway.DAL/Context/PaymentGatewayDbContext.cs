@@ -47,13 +47,6 @@ namespace Payment_Gateway.DAL.Context
             modelBuilder.Entity<Payin>()
                 .HasKey(a => a.Id);
 
-            modelBuilder.Entity<Wallet>(p =>
-            {
-                p.Property(p => p.Balance)
-                    .HasDefaultValue(0);
-
-            });
-
 
             modelBuilder.Entity<Payout>()
                 .Property(p => p.Amount)
@@ -76,35 +69,28 @@ namespace Payment_Gateway.DAL.Context
 
 
             modelBuilder.Entity<TransactionHistory>()
-                 .HasOne(t => t.Wallet)   
-                 .WithOne(w => w.TransactionHistory)      
-                 .HasForeignKey<TransactionHistory>(t => t.WalletId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            
-        
-            /* modelBuilder.Entity<Payin>()
-                 .HasOne(a => a.TransactionHistory)
-                 .WithMany(u => u.CreditTransactionList)
-                 .HasForeignKey(u => u.Id)
-                 .OnDelete(DeleteBehavior.Restrict);
+                .HasMany(a => a.CreditTransactionList)
+                .WithOne(u => u.TransactionHistory)
+                .HasForeignKey(u => u.TransactionHistoryId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
 
-             modelBuilder.Entity<Payout>()
-                 .HasOne(a => a.TransactionHistory)
-                 .WithMany(u => u.DebitTransactionList)
-                 .HasForeignKey(u => u.Id)
-                 .OnDelete(DeleteBehavior.Restrict);*/
+            modelBuilder.Entity<TransactionHistory>()
+                .HasMany(a => a.DebitTransactionList)
+                .WithOne(u => u.TransactionHistory)
+                .HasForeignKey(u => u.TransactionHistoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
-                    modelBuilder.Entity<ApplicationRole>(b =>
-                    {
-                        b.HasMany<ApplicationUserRole>()
-                        .WithOne()
-                        .HasForeignKey(ur => ur.RoleId)
-                        .IsRequired()
-                        .OnDelete(DeleteBehavior.NoAction);
-                    });
+
+            modelBuilder.Entity<ApplicationRole>(b =>
+                {
+                    b.HasMany<ApplicationUserRole>()
+                    .WithOne()
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.NoAction);
+                });
 
 
             modelBuilder.Entity<ApplicationUser>(b =>

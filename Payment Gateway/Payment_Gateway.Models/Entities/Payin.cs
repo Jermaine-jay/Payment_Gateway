@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Payment_Gateway.Models.Entities
 {
@@ -24,6 +23,9 @@ namespace Payment_Gateway.Models.Entities
         public string? IpAddress { get; set; }
         public string? Channel { get; set; }
         public string? CardType { get; set; }
-       //public TransactionHistory TransactionHistory { get; set; }
+
+        [ForeignKey("TransactionHistory")]
+        public string? TransactionHistoryId { get; set; }
+        public TransactionHistory? TransactionHistory { get; set; }
     }
 }

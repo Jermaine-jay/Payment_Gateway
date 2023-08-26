@@ -30,6 +30,7 @@ namespace Payment_Gateway.DAL.Seeds
 
                 if (!await context.TransactionHistory.AnyAsync())
                 {
+
                     await context.TransactionHistory.AddRangeAsync(TransactionHistory(jo));
                     await context.TransactionHistory.AddRangeAsync(TransactionHistory2(jer));
                     await context.TransactionHistory.AddRangeAsync(TransactionHistory3(sah));
@@ -40,7 +41,7 @@ namespace Payment_Gateway.DAL.Seeds
         }
 
 
-        private static IEnumerable<TransactionHistory> TransactionHistory(ApplicationUser wallet)
+        private static ICollection<TransactionHistory> TransactionHistory(ApplicationUser wallet)
         {
             return new List<TransactionHistory>()
             {
@@ -48,7 +49,6 @@ namespace Payment_Gateway.DAL.Seeds
                 {
 
                     WalletId = wallet.WalletId,
-                    Wallet = wallet.Wallet,
                     IsActive = true,
                     CreatedAt = DateTime.Now,
                     DebitTransactionList = new List<Payout>
@@ -66,7 +66,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(""),
-
+                            WalletId = wallet.WalletId,
                         },
 
                         new Payout()
@@ -82,7 +82,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(""),
-
+                            WalletId = wallet.WalletId,
                         },
 
                         new Payout()
@@ -98,6 +98,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(""),
+                            WalletId = wallet.WalletId,
                         },
 
                         new Payout()
@@ -113,6 +114,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(""),
+                            WalletId= wallet.WalletId,
                         },
 
                     },
@@ -135,6 +137,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246810",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId,
                        },
 
                        new Payin
@@ -154,6 +157,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "334455",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId
                        },
 
                        new Payin
@@ -173,6 +177,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246810",
                            CardType = "Visa Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId
                        },
 
                        new Payin
@@ -192,6 +197,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246810",
                            CardType = "Verve Card",
                            Channel = "Card",
+                           WalletId= wallet.WalletId
                        },
                    }
                 },
@@ -200,7 +206,7 @@ namespace Payment_Gateway.DAL.Seeds
         }
 
 
-        private static IEnumerable<TransactionHistory> TransactionHistory2(ApplicationUser applicationUser)
+        private static ICollection<TransactionHistory> TransactionHistory2(ApplicationUser applicationUser)
         {
             return new List<TransactionHistory>()
             {
@@ -209,7 +215,6 @@ namespace Payment_Gateway.DAL.Seeds
                 {
 
                     WalletId = applicationUser.WalletId,
-                    Wallet = applicationUser.Wallet,
                     IsActive = true,
                     CreatedAt = DateTime.Now,
                     DebitTransactionList = new List<Payout>
@@ -227,6 +232,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(),
+                            WalletId = applicationUser.WalletId,
                         },
 
                         new Payout()
@@ -242,7 +248,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(),
-
+                            WalletId = applicationUser.WalletId
                         },
 
                         new Payout()
@@ -258,6 +264,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(),
+                            WalletId = applicationUser.WalletId
                         },
 
                         new Payout()
@@ -273,6 +280,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(),
+                            WalletId= applicationUser.WalletId
                         },
 
                     },
@@ -295,6 +303,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "209810",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId= applicationUser.WalletId
                        },
 
                        new Payin
@@ -314,6 +323,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "334676",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId= applicationUser.WalletId
                        },
 
                        new Payin
@@ -333,6 +343,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246335",
                            CardType = "Visa Card",
                            Channel = "Card",
+                           WalletId= applicationUser.WalletId
                        },
 
                        new Payin
@@ -352,6 +363,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "436810",
                            CardType = "Verve Card",
                            Channel = "Card",
+                           WalletId= applicationUser.WalletId
                        },
                    }
                 },
@@ -359,7 +371,7 @@ namespace Payment_Gateway.DAL.Seeds
         }
 
 
-        private static IEnumerable<TransactionHistory> TransactionHistory3(ApplicationUser wallet)
+        private static ICollection<TransactionHistory> TransactionHistory3(ApplicationUser wallet)
         {
             return new List<TransactionHistory>()
             {
@@ -367,7 +379,6 @@ namespace Payment_Gateway.DAL.Seeds
                 {
 
                     WalletId = wallet.WalletId,
-                    Wallet = wallet.Wallet,
                     IsActive = true,
                     CreatedAt = DateTime.Now,
                     DebitTransactionList = new List<Payout>
@@ -384,7 +395,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(),
-
+                            WalletId = wallet.WalletId,
                         },
 
                         new Payout()
@@ -399,7 +410,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Successful",
                             Responsestatus = true,
                             CreatedAt = DateTime.Now.ToString(),
-
+                            WalletId= wallet.WalletId,
                         },
 
                         new Payout()
@@ -414,6 +425,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(),
+                            WalletId= wallet.WalletId,
                         },
 
                         new Payout()
@@ -428,6 +440,7 @@ namespace Payment_Gateway.DAL.Seeds
                             Status = "Failed",
                             Responsestatus = false,
                             CreatedAt = DateTime.Now.ToString(),
+                            WalletId= wallet.WalletId,
                         },
 
                     },
@@ -449,6 +462,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "298810",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId,
                        },
 
                        new Payin
@@ -467,6 +481,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "330055",
                            CardType = "Master Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId
                        },
 
                        new Payin
@@ -485,6 +500,7 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246810",
                            CardType = "Visa Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId
                        },
 
                        new Payin
@@ -503,11 +519,10 @@ namespace Payment_Gateway.DAL.Seeds
                            AuthorizationCode = "246810",
                            CardType = "Verve Card",
                            Channel = "Card",
+                           WalletId = wallet.WalletId
                        },
                    }
-
                 },
-
             };
         }
     }

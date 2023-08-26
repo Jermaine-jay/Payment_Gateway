@@ -3,6 +3,6 @@
     public class GetTransactionRequest
     {
         public string? WalletId { get; set; }
-        public string? IransactionId { get; set; }
+        public string? TransactionId { get; set; }
     }
 }

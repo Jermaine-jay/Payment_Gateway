@@ -170,14 +170,15 @@ namespace Payment_Gateway.BLL.Implementation.Services
             {
                 throw new ArgumentNullException("User Not Found");
             }
-            var wallet = await _walletRepo.GetSingleByAsync(u => u.WalletId.Equals(user.WalletId), include: u => u.Include(t => t.TransactionHistory));
-            if(wallet == null)
+            //var wallet = await _walletRepo.GetSingleByAsync(u => u.WalletId.Equals(user.WalletId), include: u => u.Include(t => t.TransactionHistory));
+            var transaction = await _transRepo.GetSingleByAsync(u => u.WalletId == user.WalletId);
+            if(transaction == null)
             {
                 throw new ArgumentNullException("User Not Found");
             }
 
-            var transac = wallet.TransactionHistory;
-            return transac.DebitTransactionList.Join(transac.CreditTransactionList,
+          
+            return transaction.DebitTransactionList.Join(transaction.CreditTransactionList,
                 debit => debit.Id,
                 credit => credit.Id,
                 (debit, credit) => new TransactionResponse
@@ -205,7 +206,9 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     Success = false,
                 };
             }
-            var result = user.Wallet.TransactionHistory.CreditTransactionList.Select(u => new Payin
+
+            var transaction = await _transRepo.GetSingleByAsync(u => u.WalletId == user.WalletId);
+            var result = transaction.CreditTransactionList.Select(u => new Payin
             {
                 Transactionid = u.Transactionid,
                 Amount = u.Amount,
@@ -267,8 +270,10 @@ namespace Payment_Gateway.BLL.Implementation.Services
             });
 
 
-            var k = await _userRepo.GetSingleByAsync(u => u.Id.ToString() == userId, include: e => e.Include(u => u.Wallet), tracking: true);
-            var result = k.Wallet.TransactionHistory.DebitTransactionList.Select(u => new Payout
+            var k = await _userRepo.GetSingleByAsync(u => u.Id.ToString() == userId);
+            var transaction = await _transRepo.GetSingleByAsync(u => u.WalletId == k.WalletId);
+
+            var result = transaction.DebitTransactionList.Select(u => new Payout
             {
                 payoutId = u.payoutId,
                 Amount = u.Amount,

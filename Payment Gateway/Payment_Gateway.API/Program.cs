@@ -19,7 +19,7 @@ namespace Payment_Gateway.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -109,9 +109,10 @@ namespace Payment_Gateway.API
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers();});
             app.MapControllers();
-            /*app.SeedRole();
-            app.SeededUserAsync().Wait();
-            app.EnsurePopulatedAsync().Wait();*/
+
+            await app.SeedRole();
+            await app.SeededUserAsync();
+            await app.EnsurePopulatedAsync();
 
             app.Run();
         }

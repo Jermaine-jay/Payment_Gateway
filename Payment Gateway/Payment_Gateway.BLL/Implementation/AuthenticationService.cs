@@ -287,15 +287,6 @@ namespace Payment_Gateway.BLL.Implementation
                     UserId = user.Id.ToString(),
                 }
             };
-
-
-            /* List<Claim> userClaims = (await _userManager.GetClaimsAsync(user)).ToList();
-             List<string> userRoles = (await _userManager.GetRolesAsync(user)).ToList();
-
-             IEnumerable<Claim> roleClaims = await _roleClaimsRepo.GetQueryable().Include(x => x.AppRole)
-                 .Where(r => userRoles.Any(u => u == r.AppRole.Name)).Select(s => s.ToClaim()).ToListAsync();
-             userClaims.AddRange(roleClaims);*/
-
         }
 
 

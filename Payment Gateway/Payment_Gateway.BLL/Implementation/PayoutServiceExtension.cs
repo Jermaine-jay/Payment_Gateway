@@ -98,10 +98,11 @@ namespace Payment_Gateway.BLL.Implementation
 
 
 
-        public async Task<bool> UpdatePayout(string userId, FinalizeTransferResponse Response)
+        public async Task<bool> UpdatePayout(string walletId, FinalizeTransferResponse Response)
         {
-            var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
-            var payout = user.Wallet.TransactionHistory.DebitTransactionList.SingleOrDefault(x => x.payoutId == Response.data.Id);
+            //var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
+            var trans = await _TrasHisRepo.GetSingleByAsync(u => u.WalletId == walletId);
+            var payout = trans.DebitTransactionList.SingleOrDefault(x => x.payoutId == Response.data.Id);
             if (payout.Responsestatus == true)
             {
                 payout.Status = Response.status;

@@ -8,7 +8,7 @@ namespace Payment_Gateway.BLL.Interfaces.IServices
     {
         Task<ServiceResponse<CheckBalanceResponse>> CheckBalance();
         Task<ServiceResponse<FetchLedgerResponse>> FetchLedger();
-        Task<ServiceResponse<UserDto>> GetUserDetails(string userId);
+        Task<ServiceResponse<UserDto>> GetUserDetails(string walletId);
         Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers();
         Task<ServiceResponse<IList<UserDto>>> GetAllUsersWithBalance();
 

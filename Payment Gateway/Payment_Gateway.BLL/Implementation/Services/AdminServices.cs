@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Infrastructure.Paystack;
@@ -15,6 +16,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
     public class AdminServices : IAdminServices
     {
         private readonly IRepository<ApplicationUser> _userRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRepository<Wallet> _walletRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPaystackPostRequest _paystackPostRequest;
@@ -22,9 +24,10 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
 
 
-        public AdminServices(IUnitOfWork unitOfWork, IPaystackPostRequest paystackPostRequest, PaystackConfig paystackConfig)
+        public AdminServices(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, IPaystackPostRequest paystackPostRequest, PaystackConfig paystackConfig)
         {
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
             _walletRepo = _unitOfWork.GetRepository<Wallet>();
             _paystackPostRequest = paystackPostRequest;
@@ -150,16 +153,15 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
             return new ServiceResponse<IList<UserDto>>
             {
-                Message = "User Not Found",
-                StatusCode = HttpStatusCode.NotFound,
+                StatusCode = HttpStatusCode.OK,
                 Data = result,
             };
         }
 
 
-        public async Task<ServiceResponse<UserDto>> GetUserDetails(string userId)
+        public async Task<ServiceResponse<UserDto>> GetUserDetails(string walletId)
         {
-            var user = await _userRepo.GetSingleByAsync(e => e.Id.ToString() == userId, include: u => u.Include(u => u.Wallet));
+            var user = await _userRepo.GetSingleByAsync(e => e.WalletId == walletId, include: u => u.Include(u => u.Wallet));
             if (user == null)
             {
                 return new ServiceResponse<UserDto>
@@ -191,7 +193,8 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<ServiceResponse<UserDto>> GetUser(string walletId)
         {
-            var user = await _userRepo.GetSingleByAsync(e => e.WalletId.ToString() == walletId, include: u => u.Include(u => u.Wallet));
+            var wallet = await _userRepo.GetAllAsync(include: u => u.Include(u => u.Wallet));
+               var user = wallet.Where( u=>u.WalletId == walletId).FirstOrDefault();
             if (user == null)
             {
                 return new ServiceResponse<UserDto>
@@ -204,8 +207,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
             return new ServiceResponse<UserDto>
             {
-                Message = "User Not Found",
-                StatusCode = HttpStatusCode.NotFound,
+                StatusCode = HttpStatusCode.OK,
                 Data = new UserDto
                 {
                     UserName = user.UserName,
@@ -217,7 +219,8 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     ApiSecretKey = user.ApiSecretKey,
                     WalletId = user.WalletId,
                     Balance = user.Wallet.Balance,
-                }
+                },
+                Success = true
             };
 
         }

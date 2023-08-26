@@ -12,8 +12,8 @@ using Payment_Gateway.DAL.Context;
 namespace Payment_Gateway.DAL.Migrations
 {
     [DbContext(typeof(PaymentGatewayDbContext))]
-    [Migration("20230824071747_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230826204237_firstMigration")]
+    partial class firstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -515,13 +515,9 @@ namespace Payment_Gateway.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("WalletId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("WalletId")
-                        .IsUnique()
-                        .HasFilter("[WalletId] IS NOT NULL");
 
                     b.ToTable("TransactionHistory");
                 });
@@ -532,9 +528,7 @@ namespace Payment_Gateway.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<long>("Balance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(0L);
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -544,9 +538,6 @@ namespace Payment_Gateway.DAL.Migrations
 
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("TransactionHistoryId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -665,26 +656,22 @@ namespace Payment_Gateway.DAL.Migrations
 
             modelBuilder.Entity("Payment_Gateway.Models.Entities.Payin", b =>
                 {
-                    b.HasOne("Payment_Gateway.Models.Entities.TransactionHistory", null)
+                    b.HasOne("Payment_Gateway.Models.Entities.TransactionHistory", "TransactionHistory")
                         .WithMany("CreditTransactionList")
-                        .HasForeignKey("TransactionHistoryId");
+                        .HasForeignKey("TransactionHistoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("TransactionHistory");
                 });
 
             modelBuilder.Entity("Payment_Gateway.Models.Entities.Payout", b =>
                 {
-                    b.HasOne("Payment_Gateway.Models.Entities.TransactionHistory", null)
+                    b.HasOne("Payment_Gateway.Models.Entities.TransactionHistory", "TransactionHistory")
                         .WithMany("DebitTransactionList")
-                        .HasForeignKey("TransactionHistoryId");
-                });
-
-            modelBuilder.Entity("Payment_Gateway.Models.Entities.TransactionHistory", b =>
-                {
-                    b.HasOne("Payment_Gateway.Models.Entities.Wallet", "Wallet")
-                        .WithOne("TransactionHistory")
-                        .HasForeignKey("Payment_Gateway.Models.Entities.TransactionHistory", "WalletId")
+                        .HasForeignKey("TransactionHistoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Wallet");
+                    b.Navigation("TransactionHistory");
                 });
 
             modelBuilder.Entity("Payment_Gateway.Models.Entities.ApplicationRoleClaim", b =>
@@ -714,9 +701,8 @@ namespace Payment_Gateway.DAL.Migrations
 
             modelBuilder.Entity("Payment_Gateway.Models.Entities.Wallet", b =>
                 {
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("TransactionHistory");
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
