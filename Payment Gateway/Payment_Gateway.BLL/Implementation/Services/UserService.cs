@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Interfaces;
@@ -52,7 +51,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 {
                     Balance = user.Wallet.Balance,
                 },
-                
+
             };
         }
 
@@ -96,24 +95,24 @@ namespace Payment_Gateway.BLL.Implementation.Services
         public async Task<ServiceResponse<ICollection<TransactionHistory>>> GetTransactionsDetails(string userId)
         {
             var user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
-            if(user == null)
+            if (user == null)
             {
                 return new ServiceResponse<ICollection<TransactionHistory>>
                 {
                     Message = "User Not Found",
                     StatusCode = HttpStatusCode.NotFound,
-                    Success =false,
+                    Success = false,
                 };
             }
 
             var transac = await _transRepo.GetByAsync(u => u.WalletId == user.WalletId);
-            if(transac == null)
+            if (transac == null)
             {
                 return new ServiceResponse<ICollection<TransactionHistory>>
                 {
                     Message = "No Transactions Found",
                     StatusCode = HttpStatusCode.NotFound,
-                    Success =false,
+                    Success = false,
                 };
             }
 
@@ -172,12 +171,12 @@ namespace Payment_Gateway.BLL.Implementation.Services
             }
             //var wallet = await _walletRepo.GetSingleByAsync(u => u.WalletId.Equals(user.WalletId), include: u => u.Include(t => t.TransactionHistory));
             var transaction = await _transRepo.GetSingleByAsync(u => u.WalletId == user.WalletId);
-            if(transaction == null)
+            if (transaction == null)
             {
                 throw new ArgumentNullException("User Not Found");
             }
 
-          
+
             return transaction.DebitTransactionList.Join(transaction.CreditTransactionList,
                 debit => debit.Id,
                 credit => credit.Id,

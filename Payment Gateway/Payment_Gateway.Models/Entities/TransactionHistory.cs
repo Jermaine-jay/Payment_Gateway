@@ -11,7 +11,7 @@ namespace Payment_Gateway.Models.Entities
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public IList<Payout>? DebitTransactionList { get; set; }
-        public IList<Payin>? CreditTransactionList { get; set; }
+        public ICollection<Payout>? DebitTransactionList { get; set; }
+        public ICollection<Payin>? CreditTransactionList { get; set; }
     }
 }

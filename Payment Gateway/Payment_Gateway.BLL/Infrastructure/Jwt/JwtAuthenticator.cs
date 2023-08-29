@@ -9,6 +9,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+
+
 namespace Payment_Gateway.BLL.Infrastructure.jwt
 {
     public class JwtAuthenticator : IJWTAuthenticator

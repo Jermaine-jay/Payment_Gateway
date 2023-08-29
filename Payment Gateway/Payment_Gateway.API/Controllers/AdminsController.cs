@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Payment_Gateway.BLL.Implementation;
 using Payment_Gateway.BLL.Infrastructure;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.BLL.Interfaces.IServices;
 using Payment_Gateway.Shared.DataTransferObjects.Request;
 using Swashbuckle.AspNetCore.Annotations;
+
+
 
 namespace Payment_Gateway.API.Controllers
 {
@@ -26,8 +27,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("check-balance", Name = "check-admin-balance")]
         [SwaggerOperation(Summary = "Check account balance")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
@@ -41,8 +40,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("check-ledger", Name = "Check-Ledger")]
         [SwaggerOperation(Summary = "Check Ledger balance")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
@@ -56,9 +53,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
-        [HttpGet("all-users", Name ="all-users")]
+        [HttpGet("all-users", Name = "all-users")]
         [SwaggerOperation(Summary = "Get All Registered Users")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
@@ -74,9 +69,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
-        [HttpGet("all-users-balance", Name= "All-Users-Balance")]
+        [HttpGet("all-users-balance", Name = "All-Users-Balance")]
         [SwaggerOperation(Summary = "Get All Registered Users With Their Account Balance")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
@@ -92,9 +85,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
-        [HttpGet("deleteUser", Name ="Delete-User")]
+        [HttpGet("deleteUser", Name = "Delete-User")]
         [SwaggerOperation(Summary = "Delete A user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
@@ -110,16 +101,14 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
-        [HttpGet("Get-User", Name ="Get-User")]
+        [HttpGet("Get-User", Name = "Get-User")]
         [SwaggerOperation(Summary = "Get A Registered User with walletId")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUser(string userId)
         {
-            var response = await _adminServices.GetUser("2018738891");
+            var response = await _adminServices.GetUser(userId);
             if (response.Success)
                 return Ok(response);
 
@@ -128,8 +117,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("get-user-details", Name = "get-user-details")]
         [SwaggerOperation(Summary = "Get All Registered User Details")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
@@ -146,39 +133,27 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("users-transactions", Name = "users-transactions")]
         [SwaggerOperation(Summary = "Get A Registered User Transaction")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUserTransactions(string walletId)
+        public async Task<IActionResult> GetUsersTransactions()
         {
             var response = await _transactionServices.GetUsersTransactionHistory();
-            //if (response.Success)
-                return Ok(response);
-
-            //return BadRequest(response);
+            return Ok(response);
         }
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("user-transaction", Name = "user-transaction")]
         [SwaggerOperation(Summary = "Get All Registered User Transaction")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UserTransaction(string TransactionId, string request)
+        public async Task<IActionResult> UserTransaction([FromQuery] GetTransactionRequest request)
         {
-            var send = new GetTransactionRequest
-            {
-                TransactionId = TransactionId,
-                WalletId = request
-            };
-            var response = await _transactionServices.GetTransaction(send);
+            var response = await _transactionServices.GetTransaction(request);
             if (response.Success)
                 return Ok(response);
 
@@ -187,8 +162,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("user-debit-transactions", Name = "User-Debit-Transactions")]
         [SwaggerOperation(Summary = "Get user debit trans details")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
@@ -205,8 +178,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        //[Authorize]
-        //[Route("list-bank")]
         [HttpGet("user-credit-transactions", Name = "User-Credit-Transactions")]
         [SwaggerOperation(Summary = "Get user credit trans details")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]

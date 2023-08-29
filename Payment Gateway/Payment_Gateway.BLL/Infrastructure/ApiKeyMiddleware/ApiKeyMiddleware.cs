@@ -7,7 +7,6 @@ namespace Payment_Gateway.BLL.Infrastructure.ApiKeyMiddleware
     {
         private readonly RequestDelegate _next;
 
-
         public ApiKeyMiddleware(RequestDelegate next)
         {
             _next = next;

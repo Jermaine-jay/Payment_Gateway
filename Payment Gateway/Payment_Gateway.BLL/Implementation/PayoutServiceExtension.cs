@@ -65,7 +65,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task DebitTransfee(string userId, TransferResponse response)
         {
             var feeAmount = await TranscationFees(response.data.amount);
@@ -97,7 +96,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task<bool> UpdatePayout(string walletId, FinalizeTransferResponse Response)
         {
             //var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
@@ -111,7 +109,6 @@ namespace Payment_Gateway.BLL.Implementation
             }
             return false;
         }
-
 
 
         public async Task<long> TranscationFees(long Amount)
@@ -144,7 +141,6 @@ namespace Payment_Gateway.BLL.Implementation
             //    return 140;
             return 150;
         }
-
 
 
         public async Task<object> CompleteTransfer(string userId, string pin, FinalizeTransferResponse response)
@@ -184,7 +180,6 @@ namespace Payment_Gateway.BLL.Implementation
                 StatusCode = HttpStatusCode.OK,
             };
         }
-
 
 
         public class CompleteTransferResponse

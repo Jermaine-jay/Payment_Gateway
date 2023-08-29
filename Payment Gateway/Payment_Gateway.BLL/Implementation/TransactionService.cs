@@ -68,43 +68,7 @@ namespace Payment_Gateway.Shared.DataTransferObjects
                     StatusCode = HttpStatusCode.NotFound,
                     Success = false,
                 };
-            }
-
-            /* var result = transac.OrderByDescending(u => u.CreatedAt).Select(e => new TransactionHistory
-             {
-                 Id = e.Id,
-                 WalletId = e.WalletId,
-                 DebitTransactionList = e.DebitTransactionList.Select(d => new Payout
-                 {
-                     WalletId = d.WalletId,
-                     payoutId = d.payoutId,
-                     Amount = d.Amount,
-                     Reason = d.Reason,
-                     Recipient = d.Recipient,
-                     Reference = d.Reference,
-                     Currency = d.Currency,
-                     Source = d.Source,
-                     Responsestatus = d.Responsestatus,
-                     Status = d.Status,
-                     CreatedAt = d.CreatedAt,
-                 }).ToList(),
-
-                 CreditTransactionList = e.CreditTransactionList.Select(c => new Payin
-                 {
-                     Transactionid = c.Transactionid,
-                     Amount = c.Amount,
-                     UserId = c.UserId,
-                     WalletId = c.WalletId,
-                     Reference = c.Reference,
-                     Email = c.Email,
-                     AccountName = c.AccountName,
-                     Bank = c.Bank,
-                     Status = c.Status,
-                     GatewayResponse = c.GatewayResponse,
-                     CreatedAt = c.CreatedAt,
-                     PaidAt = c.PaidAt,
-                 }).ToList(),
-             });*/
+            }        
 
             return new ServiceResponse<IEnumerable<TransactionHistory>>
             {
@@ -116,121 +80,228 @@ namespace Payment_Gateway.Shared.DataTransferObjects
         }
 
 
-
-        public async Task<ServiceResponse<TransactionHistory>> GetTransaction(GetTransactionRequest request)
+        public async Task<ServiceResponse<IEnumerable<TransactionDto>>> GetTransaction(GetTransactionRequest request)
         {
-            var wallet = await _walletRepo.GetSingleByAsync(u=> u.WalletId == request.WalletId);
-            if (wallet == null)
+
+            var transac = await _transRepo.GetSingleByAsync(u => u.WalletId == request.WalletId, include: u => u.Include(u => u.CreditTransactionList).Include(ct => ct.DebitTransactionList));
+            if (transac == null)
             {
-                return new ServiceResponse<TransactionHistory>
+                return new ServiceResponse<IEnumerable<TransactionDto>>
                 {
-                    Message = "User Not Found",
+                    Message = "Transaction does not exist",
+                    StatusCode = HttpStatusCode.BadGateway,
+                    Success = false,
+                };
+            }
+
+
+            var payintransacExist = transac.CreditTransactionList.Any(u => u.Transactionid == request.TransactionId);
+            if (payintransacExist)
+            {
+                var result = transac.CreditTransactionList.Where(u => u.Transactionid == request.TransactionId);
+                var response = result.Select(u => new TransactionDto
+                {
+                    Transactionid = request.TransactionId,
+                    AccountName = u.AccountName,
+                    Amount = u.Amount,
+                    CreatedAt = u.CreatedAt,
+                    PaidAt = u.PaidAt,
+                    Reference = u.Reference,
+                    Bank = u.Bank,
+                    Channel = u.Channel,
+                    CardType = u.CardType,
+                });
+
+                return new ServiceResponse<IEnumerable<TransactionDto>>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Success = true,
+                    Data = response
+                };
+            }
+
+
+            var payouttransacExist = transac.DebitTransactionList.Any(u => u.payoutId == request.TransactionId);
+            if (payouttransacExist)
+            {
+                var result = transac.DebitTransactionList.Where(u => u.payoutId == request.TransactionId);
+                var response = result.Select(u => new TransactionDto
+                {
+                    payoutId = request.TransactionId,
+                    Amount = u.Amount,
+                    Source = u.Source,
+                    Recipient = u.Recipient,
+                    CreatedAt = u.CreatedAt,
+                    Currency = u.Currency,
+                    Reason = u.Reason,
+                    Reference = u.Reference,
+                });
+
+                return new ServiceResponse<IEnumerable<TransactionDto>>
+                {
+                    Message = "Transaction does not exist",
+                    StatusCode = HttpStatusCode.BadGateway,
+                    Data = response
+                };
+            }
+
+            return new ServiceResponse<IEnumerable<TransactionDto>>
+            {
+                Message = "Error performing this operation",
+                StatusCode = HttpStatusCode.BadGateway,
+                Success = false,
+            };
+
+        }
+
+
+        public async Task<ServiceResponse<IEnumerable<TransactionHistory>>> GetUsersTransactionHistory()
+        {
+            var transaction = await _transRepo.GetAllAsync(include: u=> u.Include(u => u.CreditTransactionList).Include(u => u.DebitTransactionList));
+            if(transaction == null)
+            {
+                return new ServiceResponse<IEnumerable<TransactionHistory>>
+                {
+                    Message = "No transaction History Found",
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false
                 };
             }
 
-            var transac = await _transRepo.GetAllAsync();
-
-            var result = transac.Where(u => u.WalletId == request.WalletId && (u.CreditTransactionList.Any(u => u.Transactionid == request.TransactionId)
-             || u.DebitTransactionList.Any(u => u.payoutId == request.TransactionId))).FirstOrDefault();
-
-            if (result == null)
+            var data =  transaction.Select(u => new TransactionHistory
             {
-                return new ServiceResponse<TransactionHistory>
+                Id = u.Id,
+                WalletId = u.WalletId,
+                CreatedAt = u.CreatedAt,
+                DebitTransactionList = u.DebitTransactionList.Select(d => new Payout
                 {
-                    Message = "Transaction Not Found",
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Success = false
-                };
-            }
+                    WalletId = d.WalletId,
+                    payoutId = d.payoutId,
+                    Amount = d.Amount,
+                    Reason = d.Reason,
+                    Recipient = d.Recipient,
+                    Reference = d.Reference,
+                    Currency = d.Currency,
+                    Source = d.Source,
+                    Responsestatus = d.Responsestatus,
+                    Status = d.Status,
+                    CreatedAt = d.CreatedAt,
+                }).ToList(),
 
-            return new ServiceResponse<TransactionHistory>
+                CreditTransactionList = u.CreditTransactionList.Select(c => new Payin
+                {
+                    Transactionid = c.Transactionid,
+                    Amount = c.Amount,
+                    UserId = c.UserId,
+                    WalletId = c.WalletId,
+                    Reference = c.Reference,
+                    Email = c.Email,
+                    AccountName = c.AccountName,
+                    Bank = c.Bank,
+                    Status = c.Status,
+                    GatewayResponse = c.GatewayResponse,
+                    CreatedAt = c.CreatedAt,
+                    PaidAt = c.PaidAt,
+                }).ToList(),
+
+            });
+
+            return new ServiceResponse<IEnumerable<TransactionHistory>>
             {
-                Message = "User Not Found",
-                StatusCode = HttpStatusCode.BadRequest,
+                StatusCode = HttpStatusCode.OK,
                 Success = true,
-                Data = result
+                Data = data
             };
         }
 
 
-
-        public async Task<object> GetUsersTransactionHistory()
+        public async Task<object> GetTransactionsByDate(string startdate, string enddate, string walletid)
         {
-            var wall = _userManager.Users.AsQueryable();
-            var tran = _userManager.Users.AsQueryable();
-            var b = _userManager.Users;
-
-      /*      var c = b.Join(wall.ToList(),
-                u => u.WalletId,
-                e => e.WalletId,
-                (u, e) => new
+          /*  var transac = await _transRepo.GetSingleByAsync(u => u.WalletId == walletid, include: u => u.Include(u => u.CreditTransactionList).Include(ct => ct.DebitTransactionList));
+            if (transac == null)
+            {
+                return new ServiceResponse<IEnumerable<TransactionDto>>
                 {
-                    e.WalletId,
-                    u.UserName,
-                }).Join(tran.ToList(),
-                    u => u.WalletId,
-                    e => e.WalletId,
-                    (u, e) => new
-                    {
-                        u.WalletId,
-                        e.UserName,
-                        DebitTransactionList = e.Wallet.DebitTransactionList.Select(d => new Payout
-                        {
-                            Id = d.Id,
-                            WalletId = d.WalletId,
-                            payoutId = d.payoutId,
-                            Amount = d.Amount,
-                            Reason = d.Reason,
-                            Recipient = d.Recipient,
-                            Reference = d.Reference,
-                            Currency = d.Currency,
-                            Source = d.Source,
-                            Responsestatus = d.Responsestatus,
-                            Status = d.Status,
-                            CreatedAt = d.CreatedAt,
-                        }),
-
-                        CreditTransactionList = e.Wallet.TransactionHistory.CreditTransactionList.Select(c => new Payin
-                        {
-                            Id = c.Id,
-                            Transactionid = c.Transactionid,
-                            Amount = c.Amount,
-                            UserId = c.UserId,
-                            WalletId = c.WalletId,
-                            Reference = c.Reference,
-                            Email = c.Email,
-                            AccountName = c.AccountName,
-                            Bank = c.Bank,
-                            Status = c.Status,
-                            GatewayResponse = c.GatewayResponse,
-                            CreatedAt = c.CreatedAt,
-                            PaidAt = c.PaidAt,
-                        }),
-                    });*/
-
-            return b;
-        }
+                    Message = "Transaction does not exist",
+                    StatusCode = HttpStatusCode.BadGateway,
+                    Success = false,
+                };
+            }
 
 
-        public async Task<object> GetTransactionsByDate(string startdate, string enddate, string userId)
-        {
-            var user = await _userRepo.GetSingleByAsync(p => p.Id.ToString() == userId, include: e => e.Include(e => e.Wallet));
-            var transaction = await _transRepo.GetByAsync(u => u.WalletId == user.WalletId);
+            var payintransacExist = transac.CreditTransactionList;
+            if (payintransacExist != null)
+            {
+                var result = transac.CreditTransactionList.Where(u => u.CreatedAt > startdate);
+                var response = result.Select(u => new TransactionDto
+                {
+                    Transactionid = transactionId,
+                    AccountName = u.AccountName,
+                    Amount = u.Amount,
+                    CreatedAt = u.CreatedAt,
+                    PaidAt = u.PaidAt,
+                    Reference = u.Reference,
+                    Bank = u.Bank,
+                    Channel = u.Channel,
+                    CardType = u.CardType,
+                });
 
-            return transaction.Where(t => t.CreditTransactionList.Any(u => u.CreatedAt == startdate));
+                return new ServiceResponse<IEnumerable<TransactionDto>>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Success = true,
+                    Data = response
+                };
+            }
 
-            //var transactions = await _transRepo.GetAllAsync();
-            //return transactions.Where(t => t.TransactionDate.Date == date.Date);
+
+            var payouttransacExist = transac.DebitTransactionList.Any(u => u.payoutId == transactionId);
+            if (payouttransacExist)
+            {
+                var result = transac.DebitTransactionList.Where(u => u.payoutId == transactionId);
+                var response = result.Select(u => new TransactionDto
+                {
+                    payoutId = transactionId,
+                    Amount = u.Amount,
+                    Source = u.Source,
+                    Recipient = u.Recipient,
+                    CreatedAt = u.CreatedAt,
+                    Currency = u.Currency,
+                    Reason = u.Reason,
+                    Reference = u.Reference,
+                });
+
+                return new ServiceResponse<IEnumerable<TransactionDto>>
+                {
+                    Message = "Transaction does not exist",
+                    StatusCode = HttpStatusCode.BadGateway,
+                    Data = response
+                };
+            }
+*/
+            return new ServiceResponse<IEnumerable<TransactionDto>>
+            {
+                Message = "Error performing this operation",
+                StatusCode = HttpStatusCode.BadGateway,
+                Success = false,
+            };
         }
 
 
         public async Task<ServiceResponse<IEnumerable<PayOutDto>>> GetDebitTransactions(string walletId)
         {
+            var trans = await _transRepo.GetSingleByAsync(u => u.WalletId == walletId, include: e => e.Include(u => u.DebitTransactionList), tracking: true);
+            if (trans == null)
+            {
+                return new ServiceResponse<IEnumerable<PayOutDto>>
+                {
+                    Message = "User Not Founf",
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Success = false,
+                };
+            }
 
-            var trans = await _transRepo.GetSingleByAsync(u => u.WalletId == walletId, include: e => e.Include(u => u.DebitTransactionList));
-            var result = trans.DebitTransactionList.Select(u => new PayOutDto
+            var result = trans?.DebitTransactionList?.Select(u => new PayOutDto
             {
                 payoutId = u.payoutId,
                 Amount = u.Amount,
@@ -240,7 +311,6 @@ namespace Payment_Gateway.Shared.DataTransferObjects
                 CreatedAt = u.CreatedAt,
                 Status = u.Status,
             });
-
             return new ServiceResponse<IEnumerable<PayOutDto>>
             {
                 StatusCode = HttpStatusCode.OK,
@@ -252,8 +322,8 @@ namespace Payment_Gateway.Shared.DataTransferObjects
 
         public async Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string walletId)
         {
-            var user = await _transRepo.GetSingleByAsync(p => p.WalletId == walletId, include: u => u.Include(u => u.CreditTransactionList), tracking: true);
-            if (user == null)
+            var trans = await _transRepo.GetSingleByAsync(p => p.WalletId == walletId, include: u => u.Include(u => u.CreditTransactionList), tracking: true);
+            if (trans == null)
             {
                 return new ServiceResponse<IEnumerable<Payin>>
                 {
@@ -263,7 +333,7 @@ namespace Payment_Gateway.Shared.DataTransferObjects
                 };
             }
 
-            var result = user.CreditTransactionList.Select(c => new Payin
+            var result = trans?.CreditTransactionList?.Select(c => new Payin
             {
                 Id = c.Id,
                 Transactionid = c.Transactionid,
@@ -323,6 +393,32 @@ namespace Payment_Gateway.Shared.DataTransferObjects
             public string? Status { get; set; }
             public string? WalletId { get; set; }
             public string? CreatedAt { get; set; }
+        }
+
+        public class TransactionDto
+        {
+            public string payoutId { get; set; }
+            public long Amount { get; set; }
+            public string? Reason { get; set; }
+            public string? Recipient { get; set; }
+            public string? Reference { get; set; }
+            public string Currency { get; set; }
+            public string? Source { get; set; }
+            public bool? Responsestatus { get; set; }
+            public string? Status { get; set; }
+            public string? WalletId { get; set; }
+            public string? CreatedAt { get; set; }
+            public string? Transactionid { get; set; }
+            public string? UserId { get; set; }
+            public string? Email { get; set; }
+            public string? AccountName { get; set; }
+            public string Bank { get; set; }
+            public string? GatewayResponse { get; set; }
+            public string? PaidAt { get; set; }
+            public string? AuthorizationCode { get; set; }
+            public string? IpAddress { get; set; }
+            public string? Channel { get; set; }
+            public string? CardType { get; set; }
         }
     }
 }
