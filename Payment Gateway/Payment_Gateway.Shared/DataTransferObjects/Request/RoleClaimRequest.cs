@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Payment_Gateway.Shared.DataTransferObjects.Requests
 {
     public class UpdateRoleClaimsDto
     {
         public string Role { get; set; }
-        public IList<string> Claims { get; set; }
+        public string ClaimType { get; set; }
+        public string NewClaim { get; set; }
     }
 
     public class RoleRequestDto : RequestParameters

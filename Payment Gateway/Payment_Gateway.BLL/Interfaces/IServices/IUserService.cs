@@ -13,5 +13,6 @@ namespace Payment_Gateway.BLL.Interfaces.IServices
         Task<IEnumerable<TransactionResponse>> GetAllTransactions(string walletId);
         Task<ServiceResponse<IEnumerable<Payout>>> GetDebitTransactions(string userId);
         Task<ServiceResponse<IEnumerable<Payin>>> GetCreditTransactions(string userId);
+        Task<ServiceResponse> DeleteUser(string userId);
     }
 }

@@ -102,5 +102,21 @@ namespace Payment_Gateway.API.Controllers
 
             return BadRequest(response);
         }
+
+
+        [AllowAnonymous]
+        [HttpDelete("DeleteAccount", Name = "DeleteAccount")]
+        [SwaggerOperation(Summary = "Delete my Account")]
+        [SwaggerResponse(StatusCodes.Status200OK)]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "User Not Found", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<ActionResult<AuthorizationResponse>> DeleteAccount(string userId)
+        {
+            var response = await _userService.DeleteUser(userId);
+            if (response.Success)
+                return Ok(response);
+
+            return BadRequest(response);
+        }
     }
 }

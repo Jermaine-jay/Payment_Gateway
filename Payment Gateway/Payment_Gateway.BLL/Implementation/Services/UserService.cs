@@ -291,5 +291,27 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
+
+        public async Task<ServiceResponse> DeleteUser(string userId)
+        {
+            var user = await _userRepo.GetSingleByAsync(e => e.Id.ToString() == userId);
+            if (user == null)
+            {
+                return new ServiceResponse
+                {
+                    Message = "User Not Found",
+                    StatusCode = HttpStatusCode.NotFound,
+                    Success = false,
+                };
+            }
+
+            await _userRepo.DeleteAsync(user);
+            return new ServiceResponse
+            {
+                StatusCode = HttpStatusCode.OK,
+                Success = true
+            };
+        }
+
     }
 }

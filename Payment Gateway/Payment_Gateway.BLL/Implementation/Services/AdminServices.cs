@@ -87,7 +87,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
         }
 
 
-        public async Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers()
+        public async Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers(Pagination pageOptions)
         {
             var users = await _userRepo.GetAllAsync(include: u => u.Include(u => u.Wallet));
             if (users == null)
@@ -110,6 +110,8 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 ApiSecretKey = u.ApiSecretKey,
                 Wallet = u.Wallet.WalletId,
             });
+
+            wh
 
             return new ServiceResponse<IEnumerable<ApplicationUserDto>>
             {
@@ -249,7 +251,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             await _userRepo.DeleteAsync(user);
             return new ServiceResponse
             {
-                Message = "User Deleted",
                 StatusCode = HttpStatusCode.OK,
                 Success = true
             };

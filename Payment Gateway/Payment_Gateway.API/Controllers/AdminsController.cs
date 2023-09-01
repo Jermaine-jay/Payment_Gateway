@@ -2,6 +2,7 @@
 using Payment_Gateway.BLL.Infrastructure;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.BLL.Interfaces.IServices;
+using Payment_Gateway.BLL.Pagination;
 using Payment_Gateway.Shared.DataTransferObjects.Request;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -58,11 +59,11 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(Pagination paginationargs)
         {
             var response = await _adminServices.GetAllUsers();
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
@@ -78,14 +79,14 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _adminServices.GetAllUsersWithBalance();
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
 
 
 
-        [HttpGet("deleteUser", Name = "Delete-User")]
+        [HttpDelete("deleteUser", Name = "Delete-User")]
         [SwaggerOperation(Summary = "Delete A user")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
@@ -110,7 +111,7 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _adminServices.GetUser(userId);
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
@@ -126,7 +127,7 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _adminServices.GetUserDetails(walletId);
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
@@ -141,7 +142,7 @@ namespace Payment_Gateway.API.Controllers
         public async Task<IActionResult> GetUsersTransactions()
         {
             var response = await _transactionServices.GetUsersTransactionHistory();
-            return Ok(response);
+            return Ok(response.Data);
         }
 
 
@@ -155,7 +156,7 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _transactionServices.GetTransaction(request);
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
@@ -171,7 +172,7 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _transactionServices.GetDebitTransactions(walletId);
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }
@@ -187,7 +188,7 @@ namespace Payment_Gateway.API.Controllers
         {
             var response = await _transactionServices.GetCreditTransactions(walletId);
             if (response.Success)
-                return Ok(response);
+                return Ok(response.Data);
 
             return BadRequest(response);
         }

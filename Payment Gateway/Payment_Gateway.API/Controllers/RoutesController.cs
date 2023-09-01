@@ -6,9 +6,10 @@ using Payment_Gateway.BLL.Infrastructure;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
 
+
 namespace Payment_Gateway.API.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     //[Authorize(Policy = "Authorization")]
     public class RoutesController : ControllerBase

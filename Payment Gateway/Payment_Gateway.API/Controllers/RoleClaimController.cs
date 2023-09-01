@@ -45,7 +45,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        [HttpPost("delete-claim", Name = "delete-claim")]
+        [HttpDelete("delete-claim", Name = "delete-claim")]
         [SwaggerOperation(Summary = "deletes claims")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Success")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to delete claim", Type = typeof(ErrorResponse))]
@@ -54,6 +54,19 @@ namespace Payment_Gateway.API.Controllers
         {
             await _userClaimsService.RemoveUserClaims(claimValue, role);
             return Ok();
+        }
+
+
+
+        [HttpPut("edit-claim", Name = "edit-claim")]
+        [SwaggerOperation(Summary = "edit claim")]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "Success", Type = typeof(RoleClaimResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to Edit claim", Type = typeof(ErrorResponse))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> EditClaim([FromBody] UpdateRoleClaimsDto request)
+        {
+            var response = await _userClaimsService.UpdateRoleClaims(request);
+            return Ok(response);
         }
     }
 }

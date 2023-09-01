@@ -30,7 +30,7 @@ namespace Payment_Gateway.API.Controllers
         [AllowAnonymous]
         [HttpPost("CreateUser", Name = "Create-New-User")]
         [SwaggerOperation(Summary = "Creates user")]
-        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthenticationResponse))]
+        [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthorizationResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "User with provided email already exists", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
@@ -104,7 +104,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        [HttpPost("ChangePassword", Name = "ChangePassword")]
+        [HttpPut("ChangePassword", Name = "ChangePassword")]
         [SwaggerOperation(Summary = "Change User password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "returns email confirmation", Type = typeof(ChangePasswordResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid User", Type = typeof(ErrorResponse))]
@@ -148,7 +148,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        [HttpPost("ResetPassword", Name = "ResetPassword")]
+        [HttpPut("ResetPassword", Name = "ResetPassword")]
         [SwaggerOperation(Summary = "Reset User password")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "Resets a user password", Type = typeof(ChangePasswordResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Invalid User", Type = typeof(ErrorResponse))]

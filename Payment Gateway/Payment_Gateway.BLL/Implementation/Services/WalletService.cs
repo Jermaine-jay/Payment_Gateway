@@ -42,15 +42,14 @@ namespace Payment_Gateway.BLL.Implementation.Services
         }
 
 
-
         public async Task<DebitResponseDto> CheckBalance(string userId, long amount)
         {
             var tranFee = await _payoutServiceExtension.TranscationFees(amount);
             var user = await _UserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
-            var balance = user.Wallet.Balance;
-            var wallet = user.Wallet;
+            var balance = user?.Wallet?.Balance;
+            var wallet = user?.Wallet;
 
-            if (string.IsNullOrEmpty(user.Id.ToString()))
+            if (string.IsNullOrEmpty(user?.Id.ToString()))
             {
                 return new DebitResponseDto
                 {
@@ -82,7 +81,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             public bool Status { get; set; }
             public string Message { get; set; }
             public long? Balance { get; set; }
-
         }
 
 

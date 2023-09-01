@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Interfaces;
@@ -31,7 +30,6 @@ namespace Payment_Gateway.BLL.Implementation
             _roleRepo = _unitOfWork.GetRepository<ApplicationRole>();
             _roleClaimRepo = _unitOfWork.GetRepository<ApplicationRoleClaim>();
         }
-
 
 
         public async Task<ServiceResponse<AddUserToRoleResponse>> AddUserToRole(AddUserToRoleRequest request)
@@ -212,7 +210,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task<IEnumerable<RoleResponse>> GetAllRoles()
         {
             var roleQueryable = await _roleRepo.GetAllAsync(include: u => u.Include(x => x.RoleClaims));
@@ -223,55 +220,10 @@ namespace Payment_Gateway.BLL.Implementation
                 Name = s.Name,
                 Claims = s.RoleClaims.Where(r => r.ClaimValue.ToLower() is not null && r.Active),
                 Active = s.Active
-            }) ;
+            });
 
-            return roleResponseQueryable;       
+            return roleResponseQueryable;
         }
 
-
-
-       /* public async Task<IEnumerable<MenuClaimsResponse>> GetRoleClaims(string roleName)
-        {
-            IEnumerable<string> claimsInRole =
-                 (await _roleRepo.GetQueryable().Include(x => x.UserRoles)
-                     .Include(x => x.RoleClaims).Where(r => r.Name.ToLower() == roleName.ToLower() && r.Active)
-                     .FirstOrDefaultAsync())?.RoleClaims.Select(s => s.ClaimValue) ?? new List<string>();
-
-
-            IEnumerable<MenuClaimsResponse> menuClaims =
-                (await _menuRepo.GetQueryable(m => m.Claims != null && m.Active).ToListAsync())
-                .Where(m => claimsInRole != null && m.Claims.Intersect(claimsInRole).Any()).GroupBy(x => x.Name).Select(s =>
-                    new MenuClaimsResponse
-                    {
-                        Menu = s.Key,
-                        Claims = s.SelectMany(_ => _.Claims).ToList()
-                    });
-
-            return menuClaims;
-        }*/
-
-
-
-       /* public async Task UpdateRoleClaims(UpdateRoleClaimsDto request)
-        {
-            ApplicationRole? role = await _roleRepo.GetQueryable().Include(x => x.RoleClaims).FirstOrDefaultAsync(r => r.Name.ToLower() == request.Role.ToLower());
-
-            if (role == null)
-                throw new InvalidOperationException("Role does not exist");
-
-            role.RoleClaims.Clear();
-
-            IList<ApplicationRoleClaim> roleClaims = new List<ApplicationRoleClaim>(request.Claims.Count);
-
-            foreach (string requestClaim in request.Claims)
-            {
-                roleClaims.Add(new ApplicationRoleClaim { ClaimType = ClaimTypes.Name, ClaimValue = requestClaim, RoleId = role.Id });
-
-            }
-
-            await _roleClaimRepo.AddRangeAsync(roleClaims);
-
-            await _unitOfWork.SaveChangesAsync();
-        }*/
     }
 }

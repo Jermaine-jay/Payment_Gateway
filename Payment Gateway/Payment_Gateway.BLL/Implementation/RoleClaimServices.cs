@@ -25,6 +25,7 @@ namespace Payment_Gateway.BLL.Implementation
             _roleRepo = _unitOfWork.GetRepository<ApplicationRole>();
         }
 
+
         public async Task<ServiceResponse<RoleClaimResponse>> AddClaim(RoleClaimRequest request)
         {
             var getRole = await _roleRepo.GetSingleByAsync(r => r.Name.ToLower() == request.Role.ToLower());
@@ -39,7 +40,7 @@ namespace Payment_Gateway.BLL.Implementation
             }
 
             var checkExisting = await _roleClaimRepo.GetSingleByAsync(x => x.ClaimType == request.ClaimType && x.RoleId == getRole.Id);
-            if (checkExisting == null)
+            if (checkExisting != null)
             {
                 return new ServiceResponse<RoleClaimResponse>()
                 {
@@ -49,7 +50,7 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-          
+
 
             var newClaim = new ApplicationRoleClaim()
             {
@@ -76,7 +77,7 @@ namespace Payment_Gateway.BLL.Implementation
         {
 
             ApplicationRole getRole = await _roleRepo.GetSingleByAsync(x => x.Name.ToLower() == role);
-              if (getRole == null)
+            if (getRole == null)
             {
                 return new ServiceResponse<IEnumerable<RoleClaimResponse>>()
                 {
@@ -86,26 +87,21 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-            IEnumerable<ApplicationRoleClaim> claims = await _roleClaimRepo.GetByAsync(x => x.RoleId == getRole.Id);
-
-            IList<RoleClaimResponse> roles = new List<RoleClaimResponse>();
-
-            foreach (var claim in claims)
+            IEnumerable<ApplicationRoleClaim> claims = await _roleClaimRepo.GetAllAsync();
+            var result = claims.Where(x => x.RoleId == getRole.Id).Select(u => new RoleClaimResponse
             {
-                roles.Add(new RoleClaimResponse()
-                {
-                    Role = getRole.Name,
-                    ClaimType = claim.ClaimType
-                });
-            }
+                Role = getRole.Name,
+                ClaimType = u.ClaimType
+            });
+
+
             return new ServiceResponse<IEnumerable<RoleClaimResponse>>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Success = true,
-                Data = roles,
+                Data = result,
             };
         }
-
 
 
         public async Task<ServiceResponse> RemoveUserClaims(string claimType, string role)
@@ -142,6 +138,32 @@ namespace Payment_Gateway.BLL.Implementation
 
         }
 
+
+        public async Task<ServiceResponse<RoleClaimResponse>> UpdateRoleClaims(UpdateRoleClaimsDto request)
+        {
+            ApplicationRole getRole = await _roleRepo.GetSingleByAsync(x => x.Name.ToLower() == request.Role);
+            if (getRole == null)
+            {
+                return new ServiceResponse<RoleClaimResponse>()
+                {
+                    Message = "Role does not Exist, Ensure there are no spaces in the text entered",
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Success = false
+                };
+            }
+
+            IEnumerable<ApplicationRoleClaim> claims = await _roleClaimRepo.GetAllAsync();
+            var result = claims.Where(x => x.ClaimType == request.ClaimType && x.RoleId == getRole.Id).FirstOrDefault();
+
+            result.ClaimType = request.NewClaim;
+            await _roleClaimRepo.UpdateAsync(result);
+
+            return new ServiceResponse<RoleClaimResponse>()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Success = true,
+            };
+        }
 
     }
 
