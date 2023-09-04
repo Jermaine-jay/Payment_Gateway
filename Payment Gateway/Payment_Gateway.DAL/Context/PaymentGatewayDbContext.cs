@@ -82,7 +82,6 @@ namespace Payment_Gateway.DAL.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-
             modelBuilder.Entity<ApplicationRole>(b =>
                 {
                     b.HasMany<ApplicationUserRole>()

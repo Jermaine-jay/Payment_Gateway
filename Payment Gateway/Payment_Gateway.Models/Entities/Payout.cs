@@ -18,6 +18,7 @@ namespace Payment_Gateway.Models.Entities
         public string? Status { get; set; }
         public string? WalletId { get; set; }
         public string? CreatedAt { get; set; }
+
         [ForeignKey("TransactionHistory")]
         public string? TransactionHistoryId { get; set; }
 

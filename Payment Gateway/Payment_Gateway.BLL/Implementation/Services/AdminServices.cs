@@ -87,7 +87,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
         }
 
 
-        public async Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers(Pagination pageOptions)
+        public async Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers()
         {
             var users = await _userRepo.GetAllAsync(include: u => u.Include(u => u.Wallet));
             if (users == null)
@@ -110,8 +110,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 ApiSecretKey = u.ApiSecretKey,
                 Wallet = u.Wallet.WalletId,
             });
-
-            wh
 
             return new ServiceResponse<IEnumerable<ApplicationUserDto>>
             {

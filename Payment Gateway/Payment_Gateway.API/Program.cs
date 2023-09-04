@@ -53,7 +53,7 @@ namespace Payment_Gateway.API
             builder.Services.AddSwaggerGen(c =>
             {
                 c.EnableAnnotations();
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Payment_Gateway_API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My Payment Gateway", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
@@ -110,9 +110,9 @@ namespace Payment_Gateway.API
             app.UseEndpoints(endpoints => { endpoints.MapControllers();});
             app.MapControllers();
 
-            await app.SeedRole();
-            await app.SeededUserAsync();
-            await app.EnsurePopulatedAsync();
+            //await app.SeedRole();
+            //await app.SeededUserAsync();
+            //await app.EnsurePopulatedAsync();
 
             app.Run();
         }

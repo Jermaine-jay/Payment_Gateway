@@ -2,7 +2,6 @@
 using Payment_Gateway.BLL.Infrastructure;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.BLL.Interfaces.IServices;
-using Payment_Gateway.BLL.Pagination;
 using Payment_Gateway.Shared.DataTransferObjects.Request;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -59,7 +58,7 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Description = "successful", Type = typeof(SuccessResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "failed", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetAllUsers(Pagination paginationargs)
+        public async Task<IActionResult> GetAllUsers()
         {
             var response = await _adminServices.GetAllUsers();
             if (response.Success)
