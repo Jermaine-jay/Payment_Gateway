@@ -47,7 +47,6 @@ namespace Payment_Gateway.DAL.Seeds
             {
                 new TransactionHistory()
                 {
-
                     WalletId = wallet.WalletId,
                     IsActive = true,
                     CreatedAt = DateTime.Now,

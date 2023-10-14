@@ -5,15 +5,12 @@ using NLog;
 using Payment_Gateway.API.Extensions;
 using Payment_Gateway.API.Filter;
 using Payment_Gateway.BLL.Implementation.Services;
+using Payment_Gateway.BLL.Infrastructure.ApiKeyMiddleware;
 using Payment_Gateway.BLL.Interfaces.IServices;
 using Payment_Gateway.BLL.Paystack.Implementation;
 using Payment_Gateway.BLL.Paystack.Interfaces;
-using Payment_Gateway.DAL;
 using Payment_Gateway.DAL.Context;
 using System.Reflection;
-using Payment_Gateway.DAL.Seeds;
-
-
 
 namespace Payment_Gateway.API
 {
@@ -32,7 +29,6 @@ namespace Payment_Gateway.API
             builder.Services.AddDbContext<PaymentGatewayDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
 
             builder.Services.ConfigurationBinder(builder.Configuration);
-
 
             //builder.Services.AddDatabaseConnection();
             builder.Services.ConfigureIdentity();
@@ -92,6 +88,7 @@ namespace Payment_Gateway.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseRouting();
 
             app.UseHttpsRedirection();
@@ -100,6 +97,7 @@ namespace Payment_Gateway.API
             {
                 ForwardedHeaders = ForwardedHeaders.All
             });
+            app.ConfigureExceptionHandler();
 
             //app.UseCors("AllowAll");
             //app.UseMiddleware<ApiKeyMiddleware>();
@@ -107,12 +105,12 @@ namespace Payment_Gateway.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers();});
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.MapControllers();
 
-            //await app.SeedRole();
-            //await app.SeededUserAsync();
-            //await app.EnsurePopulatedAsync();
+            /*await app.SeedRole();
+            await app.SeededUserAsync();
+            await app.EnsurePopulatedAsync();*/
 
             app.Run();
         }

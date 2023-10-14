@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Payment_Gateway.Models.Extensions
+namespace Payment_Gateway.Models.Utilities
 {
     public class GenerateApiKey
     {

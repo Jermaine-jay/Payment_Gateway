@@ -11,7 +11,7 @@ namespace Payment_Gateway.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "Authorization")]
+    //[Authorize(Policy = "Authorization")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthenticationService _authService;

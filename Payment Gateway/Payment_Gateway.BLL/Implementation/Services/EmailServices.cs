@@ -119,7 +119,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
             var validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.EmailConfirmation);
             //string apUrl = $"{_configuration["AppUrl"]}/api/Auth/ConfirmEmail?userId={user.Id}&token={validToken}";
-
+            
             var callbackUrl = link.GetUriByAction(context, "ConfirmEmail", "Auth", new { userId = user.Id.ToString(), validToken });
 
             //string url = $"<p>Click <a href='{apUrl}'>here</a> to reset your password.</p>";

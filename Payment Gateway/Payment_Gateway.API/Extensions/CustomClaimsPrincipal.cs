@@ -12,7 +12,7 @@ namespace Payment_Gateway.API.Extensions
 
         public static string? GetUserId(this ClaimsPrincipal user)
         {
-            return user.FindFirstValue("Id");
+            return user.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         public static IEnumerable<string> GetRoles(this ClaimsPrincipal user)

@@ -25,8 +25,6 @@ namespace Payment_Gateway.BLL.Implementation
         private readonly IRepository<ApplicationUser> _userRepo;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
-
-
         public AuthenticationService(IServiceFactory serviceFactory, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _serviceFactory = serviceFactory;
@@ -94,7 +92,7 @@ namespace Payment_Gateway.BLL.Implementation
                 UserType = UserType.User,
             };
 
-
+           
             IdentityResult result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
@@ -255,7 +253,7 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-
+          
             bool isPasswordCorrect = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!isPasswordCorrect)
             {
@@ -271,7 +269,6 @@ namespace Payment_Gateway.BLL.Implementation
             await _serviceFactory.GetService<IAccountLockoutService>().RecordSuccessfulLoginAttempt(user.Id.ToString());
             JwtToken userToken = await _serviceFactory.GetService<IJWTAuthenticator>().GenerateJwtToken(user);
 
-            string? userType = user.UserType.GetStringValue();
             string fullName = string.IsNullOrWhiteSpace(user.MiddleName)
                 ? $"{user.LastName} {user.FirstName}"
                 : $"{user.LastName} {user.FirstName} {user.MiddleName}";

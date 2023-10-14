@@ -37,7 +37,8 @@ namespace Payment_Gateway.BLL.Infrastructure.Paystack
             var jsonContent = JsonConvert.SerializeObject(request);
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            var recipientResponse = await _httpClient.PostAsync(url, httpContent);
+
+            var recipientResponse = await _httpClient.PostAsync(url,httpContent );
             return recipientResponse;
         }
     }

@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payment_Gateway.API.Extensions;
 using Payment_Gateway.BLL.Infrastructure;
 using Payment_Gateway.BLL.Interfaces;
 using Payment_Gateway.BLL.Interfaces.IServices;
@@ -31,7 +32,7 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        [AllowAnonymous]
+        [Authorize(Policy = "Authorization")]
         [HttpGet("user-balance", Name = "user-balance")]
         [SwaggerOperation(Summary = "Get user account balance")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "User balance")]
@@ -40,8 +41,8 @@ namespace Payment_Gateway.API.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
         public async Task<IActionResult> UserBalance()
         {
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.GetUserBalance("");
+            string? userId = _httpContextAccessor?.HttpContext?.User?.GetUserId();
+            var response = await _userService.GetUserBalance(userId);
             return Ok(response);
         }
 

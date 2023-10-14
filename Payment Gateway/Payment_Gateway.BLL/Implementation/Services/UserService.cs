@@ -36,12 +36,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
             var user = await _userRepo.GetSingleByAsync(u => u.Id.ToString() == userId, include: u => u.Include(t => t.Wallet));
             if (user == null)
             {
-                return new ServiceResponse<UserDto>
-                {
-                    Message = "User Not Found",
-                    StatusCode = HttpStatusCode.NotFound,
-                    Success = false
-                };
+                throw new InvalidOperationException($"User not found");
             }
             return new ServiceResponse<UserDto>
             {
@@ -54,7 +49,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
             };
         }
-
 
 
         public async Task<ServiceResponse<UserDto>> GetUserDetails(string userId)

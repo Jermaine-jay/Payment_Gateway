@@ -12,7 +12,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Payment_Gateway.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = "ApiKeyAuthorization")]
+    //[Authorize(AuthenticationSchemes = "ApiKeyAuthorization")]
     [Route("api/[controller]")]
     [ApiController]
     public class PayoutController : ControllerBase

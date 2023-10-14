@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Payment_Gateway.Models.Extensions
+namespace Payment_Gateway.Models.Utilities
 {
     public static class SHA256Hasher
     {

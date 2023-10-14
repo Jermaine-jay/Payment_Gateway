@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Payment_Gateway.BLL.Interfaces.IServices;
 using Payment_Gateway.BLL.LoggerService.Implementation;
 using Payment_Gateway.DAL.Interfaces;
@@ -14,14 +13,14 @@ namespace Payment_Gateway.BLL.Implementation.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IRepository<AdminProfile> _adminProfileRepo;
         private readonly IRepository<Admin> _adminRepo;
-    
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILoggerManager _logger;
 
         public AdminProfileServices(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILoggerManager logger)
         {
             _unitOfWork = unitOfWork;
-       
+
             _adminProfileRepo = _unitOfWork.GetRepository<AdminProfile>();
             _adminRepo = _unitOfWork.GetRepository<Admin>();
             _adminProfileRepo = _unitOfWork.GetRepository<AdminProfile>();

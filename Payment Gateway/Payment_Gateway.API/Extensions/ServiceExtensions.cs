@@ -52,6 +52,7 @@ namespace Payment_Gateway.API.Extensions
             services.AddScoped<IPayoutService, PayoutService>();
             services.AddScoped<IPayoutServiceExtension, PayoutServiceExtension>();
             services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<IMakePaymentService, MakePaymentService>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IAccountLockoutService, AccountLockoutService>();
             services.AddScoped<IUserService, UserService>();

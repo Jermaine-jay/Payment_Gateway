@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Payment_Gateway.Models.Extensions
+namespace Payment_Gateway.Models.Utilities
 {
     public class VeryfyHeaderAndContentType
     {

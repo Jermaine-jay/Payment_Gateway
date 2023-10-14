@@ -13,7 +13,8 @@ namespace Payment_Gateway.BLL.Paystack.Interfaces
 {
     public interface IMakePaymentService
     {
-        Task<PaymentResponse> MakePayment(PaymentRequest paymentRequest);
+        Task<object> MakePayment(PaymentRequest paymentRequest);
+        Task<object> CheckChargeStatus(string reference);
 
         Task<bool> VerifyPayment();
     }

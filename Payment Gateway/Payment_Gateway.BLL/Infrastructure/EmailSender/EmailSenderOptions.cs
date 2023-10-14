@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Payment_Gateway.BLL.Infrastructure.EmailSender
+﻿namespace Payment_Gateway.BLL.Infrastructure.EmailSender
 {
     public class EmailSenderOptions
     {
