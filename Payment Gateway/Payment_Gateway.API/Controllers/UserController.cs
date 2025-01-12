@@ -46,17 +46,16 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-
-        //[AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "ApiKeyAuthorization")]
         [HttpPost("user-details", Name = "user-details")]
         [SwaggerOperation(Summary = "User transactions Details")]
         [SwaggerResponse(StatusCodes.Status200OK, Description = "UserId of created user", Type = typeof(AuthenticationResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "User with provided email already exists", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, Description = "Failed to create user", Type = typeof(ErrorResponse))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Description = "It's not you, it's us", Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UserDetails(string userId)
+        public async Task<IActionResult> UserDetails()
         {
-            //var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var response = await _userService.GetUserDetails(userId);
             if(response.Success)
                 return Ok(response);

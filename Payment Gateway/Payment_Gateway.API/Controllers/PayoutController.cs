@@ -30,7 +30,6 @@ namespace Payment_Gateway.API.Controllers
 
 
 
-        
         //[Route("list-bank")]
         [HttpGet("available-banks", Name ="available-banks")]
         [SwaggerOperation(Summary = "Select preferred bank")]
