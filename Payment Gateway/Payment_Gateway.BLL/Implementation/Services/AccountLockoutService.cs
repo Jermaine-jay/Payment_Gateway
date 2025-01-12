@@ -53,7 +53,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             await _cacheService.ClearFromCache(cacheKey);
         }
 
-
         public async Task<(bool, int?)> IsAccountLocked(string userId)
         {
             string cacheKey = CacheKeySelector.AccountLockoutCacheKey(userId);
@@ -73,7 +72,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             {
                 throw new NullReferenceException("Locked accounts must specify the lock timestamp");
             }
-
 
             DateTime expectedUnlockDate = accountLockout.LockedAt!.Value.Add(ExpirationTime);
             int minutesLeft = (int)expectedUnlockDate.Subtract(DateTime.UtcNow).TotalMinutes;

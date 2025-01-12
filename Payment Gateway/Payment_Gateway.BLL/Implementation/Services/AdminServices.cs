@@ -20,8 +20,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
         private readonly IPaystackPostRequest _paystackPostRequest;
         private readonly PaystackConfig _paystackConfig;
 
-
-
         public AdminServices(IUnitOfWork unitOfWork, IPaystackPostRequest paystackPostRequest, PaystackConfig paystackConfig)
         {
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
@@ -33,12 +31,12 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<ServiceResponse<CheckBalanceResponse>> CheckBalance()
         {
-            var result = await _paystackPostRequest.GetRequest(_paystackConfig.CheckBalanceUrl);
+            HttpResponseMessage result = await _paystackPostRequest.GetRequest(_paystackConfig.CheckBalanceUrl);
 
             if (result.IsSuccessStatusCode)
             {
-                var listResponse = await result.Content.ReadAsStringAsync();
-                var getResponse = JsonConvert.DeserializeObject<CheckBalanceResponse>(listResponse);
+                string? listResponse = await result.Content.ReadAsStringAsync();
+                CheckBalanceResponse? getResponse = JsonConvert.DeserializeObject<CheckBalanceResponse>(listResponse);
 
                 return new ServiceResponse<CheckBalanceResponse>
                 {
@@ -56,15 +54,13 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
-
         public async Task<ServiceResponse<FetchLedgerResponse>> FetchLedger()
         {
-
-            var result = await _paystackPostRequest.GetRequest(_paystackConfig.FetchLedgerUrl);
+            HttpResponseMessage result = await _paystackPostRequest.GetRequest(_paystackConfig.FetchLedgerUrl);
             if (result != null)
             {
-                var ledgerResponse = await result.Content.ReadAsStringAsync();
-                var getResponse = JsonConvert.DeserializeObject<FetchLedgerResponse>(ledgerResponse);
+                string ledgerResponse = await result.Content.ReadAsStringAsync();
+                FetchLedgerResponse? getResponse = JsonConvert.DeserializeObject<FetchLedgerResponse>(ledgerResponse);
 
                 return new ServiceResponse<FetchLedgerResponse>
                 {
@@ -82,10 +78,9 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
-
         public async Task<ServiceResponse<IEnumerable<ApplicationUserDto>>> GetAllUsers()
         {
-            var users = await _userRepo.GetAllAsync(include: u => u.Include(u => u.Wallet));
+            IEnumerable<ApplicationUser> users = await _userRepo.GetAllAsync(include: u => u.Include(u => u.Wallet));
             if (users == null)
             {
                 return new ServiceResponse<IEnumerable<ApplicationUserDto>>
@@ -96,7 +91,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 };
             }
 
-            var result = users.Select(u => new ApplicationUserDto
+            IEnumerable<ApplicationUserDto> result = users.Select(u => new ApplicationUserDto
             {
                 FirstName = u.FirstName,
                 LastName = u.LastName,
@@ -116,10 +111,9 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         }
 
-
         public async Task<ServiceResponse<IList<UserDto>>> GetAllUsersWithBalance()
         {
-            var user = await _userRepo.GetAllAsync(include: u => u.Include(t => t.Wallet));
+            IEnumerable<ApplicationUser> user = await _userRepo.GetAllAsync(include: u => u.Include(t => t.Wallet));
             if (user == null)
             {
                 return new ServiceResponse<IList<UserDto>>
@@ -128,7 +122,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     StatusCode = HttpStatusCode.NotFound,
                 };
             }
-
 
             var result = user.Join(await _walletRepo.GetAllAsync(),
                 user => user.WalletId,
@@ -155,10 +148,9 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
-
         public async Task<ServiceResponse<UserDto>> GetUserDetails(string userId)
         {
-            var user = await _userRepo.GetSingleByAsync(e => e.Id.ToString() == userId, include: u => u.Include(u => u.Wallet));
+            ApplicationUser user = await _userRepo.GetSingleByAsync(e => e.Id.ToString() == userId, include: u => u.Include(u => u.Wallet));
             if (user == null)
             {
                 return new ServiceResponse<UserDto>
@@ -200,7 +192,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 };
             }
 
-
             return new ServiceResponse<UserDto>
             {
                 Message = "User Not Found",
@@ -231,7 +222,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<ServiceResponse> DeleteUser(string walletId)
         {
-            var user = await _userRepo.GetSingleByAsync(e => e.WalletId.ToString() == walletId);
+            ApplicationUser user = await _userRepo.GetSingleByAsync(e => e.WalletId.ToString() == walletId);
             if (user == null)
             {
                 return new ServiceResponse
