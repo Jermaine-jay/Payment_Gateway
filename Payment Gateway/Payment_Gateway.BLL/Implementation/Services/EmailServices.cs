@@ -68,7 +68,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<bool> Execute(string email, string subject, string htmlMessage)
         {
-            var message = new MimeMessage();
+            MimeMessage message = new();
             message.From.Add(new MailboxAddress("PayGo", _emailSenderOptions.Username));
             message.To.Add(new MailboxAddress(email, email));
             message.Subject = subject;
@@ -96,11 +96,11 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
             using (var httpClient = new HttpClient())
             {
-                var parameters = $"api_key={_zeroBounceConfig.ApiKey}&email={emailAddress}";
-                var response = await httpClient.GetAsync($"{_zeroBounceConfig.Url}?{parameters}");
+                string parameters = $"api_key={_zeroBounceConfig.ApiKey}&email={emailAddress}";
+                HttpResponseMessage response = await httpClient.GetAsync($"{_zeroBounceConfig.Url}?{parameters}");
                 response.EnsureSuccessStatusCode();
 
-                var responseContent = await response.Content.ReadAsStringAsync();
+                string responseContent = await response.Content.ReadAsStringAsync();
                 var getResponse = JsonConvert.DeserializeObject<dynamic>(responseContent).status;
                 if (getResponse == "valid")
                 {
@@ -114,10 +114,10 @@ namespace Payment_Gateway.BLL.Implementation.Services
         public async Task<bool> RegistrationMail(ApplicationUser user)
         {
             var page = _serviceFactory.GetService<IGenerateEmailPage>().EmailVerificationPage;
-            var context = _serviceFactory.GetService<IHttpContextAccessor>().HttpContext;
-            var link = _serviceFactory.GetService<LinkGenerator>();
+            HttpContext? context = _serviceFactory.GetService<IHttpContextAccessor>().HttpContext;
+            LinkGenerator link = _serviceFactory.GetService<LinkGenerator>();
 
-            var validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.EmailConfirmation);
+            string validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.EmailConfirmation);
             //string apUrl = $"{_configuration["AppUrl"]}/api/Auth/ConfirmEmail?userId={user.Id}&token={validToken}";
 
             var callbackUrl = link.GetUriByAction(context, "ConfirmEmail", "Auth", new { userId = user.Id.ToString(), validToken });
@@ -132,7 +132,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
         public async Task<string> ChangePasswordMail(ApplicationUser user)
         {
             var page = _serviceFactory.GetService<IGenerateEmailPage>().ChangePasswordPage;
-            var validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.ChangePassword);
+            string validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.ChangePassword);
 
             await SendEmailAsync(user.Email, "Change Password", page(validToken));
 
@@ -142,7 +142,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<string> ResetPasswordMail(ApplicationUser user)
         {
-            var validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.PasswordReset);
+            string? validToken = await _serviceFactory.GetService<IOtpService>().GenerateUnoqueOtpAsync(user.Id.ToString(), OtpOperation.PasswordReset);
             string apUrl = $"{_configuration["AppUrl"]}/api/Auth/ResetPassword?Token={validToken}";
 
             string url = $"<p>Click <a href='{apUrl}'>here</a> to reset your password.</p>";

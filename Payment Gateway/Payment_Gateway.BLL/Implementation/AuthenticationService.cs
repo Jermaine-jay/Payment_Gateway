@@ -28,7 +28,8 @@ namespace Payment_Gateway.BLL.Implementation
 
 
 
-        public AuthenticationService(IServiceFactory serviceFactory, IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        public AuthenticationService(IServiceFactory serviceFactory, IUnitOfWork unitOfWork, 
+            UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _serviceFactory = serviceFactory;
             _unitOfWork = unitOfWork;
@@ -65,7 +66,7 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-            var verifyEmail = await _serviceFactory.GetService<IEmailServices>().VerifyEmail(request.Email);
+            bool verifyEmail = await _serviceFactory.GetService<IEmailServices>().VerifyEmail(request.Email);
             if (!verifyEmail)
             {
                 return new ServiceResponse<AuthorizationResponse>
@@ -94,7 +95,6 @@ namespace Payment_Gateway.BLL.Implementation
                 UserType = UserType.User,
             };
 
-
             IdentityResult result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
@@ -107,7 +107,7 @@ namespace Payment_Gateway.BLL.Implementation
             }
 
 
-            var registerMail = await _serviceFactory.GetService<IEmailServices>().RegistrationMail(user);
+            bool registerMail = await _serviceFactory.GetService<IEmailServices>().RegistrationMail(user);
             if (!registerMail)
             {
                 return new ServiceResponse<AuthorizationResponse>
@@ -130,7 +130,7 @@ namespace Payment_Gateway.BLL.Implementation
             }
 
             await _userManager.AddToRoleAsync(user, roleName);
-            var response = new ServiceResponse<AuthorizationResponse>
+            ServiceResponse<AuthorizationResponse> response = new()
             {
                 Message = "User created Sucessfully",
                 StatusCode = HttpStatusCode.OK,
@@ -144,7 +144,6 @@ namespace Payment_Gateway.BLL.Implementation
             };
             return response;
         }
-
 
         public async Task<ServiceResponse<AuthorizationResponse>> ConfirmEmail(string validToken)
         {
@@ -180,7 +179,9 @@ namespace Payment_Gateway.BLL.Implementation
             }
 
 
-            var verifyToken = await _serviceFactory.GetService<IOtpService>().VerifyUniqueOtpAsync(user.Id.ToString(), validToken, OtpOperation.EmailConfirmation);
+            bool verifyToken = await _serviceFactory.GetService<IOtpService>()
+                .VerifyUniqueOtpAsync(user.Id.ToString(), validToken, OtpOperation.EmailConfirmation);
+
             if (verifyToken)
             {
                 user.EmailConfirmed = true;
@@ -225,7 +226,7 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-            var emailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+            bool emailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
             if (!emailConfirmed)
             {
                 return new ServiceResponse<AuthenticationResponse>
@@ -298,8 +299,6 @@ namespace Payment_Gateway.BLL.Implementation
 
         }
 
-
-
         public async Task<ServiceResponse<ChangePasswordResponse>> ChangeUserPassword(string userId)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
@@ -316,7 +315,6 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-
             await _serviceFactory.GetService<IEmailServices>().ChangePasswordMail(user);
             return new ServiceResponse<ChangePasswordResponse>
             {
@@ -328,8 +326,6 @@ namespace Payment_Gateway.BLL.Implementation
                 }
             };
         }
-
-
 
         public async Task<ServiceResponse<ChangePasswordResponse>> ChangePassword(ChangePasswordRequest request)
         {
@@ -391,8 +387,8 @@ namespace Payment_Gateway.BLL.Implementation
             }
 
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            var isConfrimed = await _userManager.IsEmailConfirmedAsync(user);
+            ApplicationUser user = await _userManager.FindByEmailAsync(model.Email);
+            bool isConfrimed = await _userManager.IsEmailConfirmedAsync(user);
             if (user == null || !isConfrimed)
             {
                 return new ServiceResponse<ChangePasswordResponse>
@@ -402,8 +398,7 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-
-            var result = await _serviceFactory.GetService<IEmailServices>().ResetPasswordMail(user);
+            string result = await _serviceFactory.GetService<IEmailServices>().ResetPasswordMail(user);
             return new ServiceResponse<ChangePasswordResponse>
             {
                 Message = "Reset Password Email Sent",
@@ -416,16 +411,14 @@ namespace Payment_Gateway.BLL.Implementation
             };
         }
 
-
-
         public async Task<ServiceResponse<ChangePasswordResponse>> ResetPassword(ResetPasswordRequest request)
         {
-            var opslen = (request.Token.Count() - 84);
-            var getstring = request.Token.Substring(opslen, 48);
-            var getoperation = request.Token.Substring(0, opslen);
+            int opslen = (request.Token.Count() - 84);
+            string getstring = request.Token.Substring(opslen, 48);
+            string getoperation = request.Token.Substring(0, opslen);
 
-            var getUserId = Convert.FromBase64String(getstring);
-            var operation = Convert.FromBase64String(getoperation);
+            byte[] getUserId = Convert.FromBase64String(getstring);
+            byte[] operation = Convert.FromBase64String(getoperation);
 
             string decodedStr = Encoding.ASCII.GetString(getUserId);
             string ops = Encoding.UTF8.GetString(operation);
@@ -451,7 +444,9 @@ namespace Payment_Gateway.BLL.Implementation
                 };
             }
 
-            bool isOtpValid = await _serviceFactory.GetService<IOtpService>().VerifyUniqueOtpAsync(user.Id.ToString(), request.Token, OtpOperation.PasswordReset);
+            bool isOtpValid = await _serviceFactory.GetService<IOtpService>()
+                .VerifyUniqueOtpAsync(user.Id.ToString(), request.Token, OtpOperation.PasswordReset);
+
             if (!isOtpValid)
             {
                 return new ServiceResponse<ChangePasswordResponse>
@@ -537,10 +532,7 @@ namespace Payment_Gateway.BLL.Implementation
 
             throw new InvalidOperationException();
 
-
-
         }
-
 
         public async Task<string> ChangeEmail(ChangeEmailRequest request)
         {
@@ -551,7 +543,6 @@ namespace Payment_Gateway.BLL.Implementation
 
             throw new InvalidOperationException("Recovery email not found.");
         }
-
 
         public async Task UpdateRecoveryEmail(string userId, string email)
         {
@@ -570,8 +561,6 @@ namespace Payment_Gateway.BLL.Implementation
             //    .Information("Recovery Mail Updated Successfully");
         }
 
-
-
         public async Task ToggleUserActivation(string userId)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
@@ -587,8 +576,6 @@ namespace Payment_Gateway.BLL.Implementation
             //Log.ForContext(new PropertyBagEnricher().Add("ToggleState", user.Active)
             //).Information("User activation toggle successful");
         }
-
-
 
         public async Task<ApplicationUser> GetApiKey(string apiKey)
         {

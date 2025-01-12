@@ -30,15 +30,13 @@ namespace Payment_Gateway.BLL.Implementation.Services
             _logger = logger;
         }
 
-
-
         public async Task<AdminProfile> CreateProfile(AdminProfileDto adminProfile)
         {
             try
             {
                 _logger.LogInfo("Creating Admin user profile");
 
-                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                string? userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userId == null)
                 {
@@ -98,7 +96,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
             {
                 _logger.LogInfo("Updating Admin user profile");
 
-                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                string? userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userId == null)
                 {

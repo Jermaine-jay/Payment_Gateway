@@ -33,7 +33,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             _userRepo = _unitOfWork.GetRepository<ApplicationUser>();
         }
 
-
         public async Task<ServiceResponse<UserDto>> GetUserBalance(string userId)
         {
             var user = await _userRepo.GetSingleByAsync(u => u.Id.ToString() == userId, include: u => u.Include(t => t.Wallet));
@@ -58,8 +57,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
-
-
         public async Task<ServiceResponse<UserDto>> GetUserDetails(string userId)
         {
             var user = await _userRepo.GetSingleByAsync(e => e.Id.ToString() == userId, include: u => u.Include(u => u.Wallet));
@@ -72,7 +69,6 @@ namespace Payment_Gateway.BLL.Implementation.Services
                     Success = false,
                 };
             }
-
 
             return new ServiceResponse<UserDto>
             {
@@ -93,11 +89,9 @@ namespace Payment_Gateway.BLL.Implementation.Services
             };
         }
 
-
-
         public async Task<ServiceResponse<IEnumerable<TransactionHistory>>> GetTransactionsDetails(string userId)
         {
-            var user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
+            ApplicationUser user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
             if(user == null)
             {
                 return new ServiceResponse<IEnumerable<TransactionHistory>>
@@ -108,7 +102,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
                 };
             }
 
-            var transac = await _transRepo.GetByAsync(u => u.WalletId == user.WalletId);
+            IEnumerable<TransactionHistory> transac = await _transRepo.GetByAsync(u => u.WalletId == user.WalletId);
             if(transac == null)
             {
                 return new ServiceResponse<IEnumerable<TransactionHistory>>
@@ -168,18 +162,18 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<IEnumerable<TransactionResponse>> GetAllTransactions(string userId)
         {
-            var user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
+            ApplicationUser user = await _userRepo.GetSingleByAsync(b => b.Id.ToString().Equals(userId));
             if (user == null)
             {
                 throw new ArgumentNullException("User Not Found");
             }
-            var wallet = await _walletRepo.GetSingleByAsync(u => u.WalletId.Equals(user.WalletId), include: u => u.Include(t => t.TransactionHistory));
+            Wallet wallet = await _walletRepo.GetSingleByAsync(u => u.WalletId.Equals(user.WalletId), include: u => u.Include(t => t.TransactionHistory));
             if(wallet == null)
             {
                 throw new ArgumentNullException("User Not Found");
             }
 
-            var transac = wallet.TransactionHistory;
+            TransactionHistory transac = wallet.TransactionHistory;
             return transac.DebitTransactionList.Join(transac.CreditTransactionList,
                 debit => debit.Id,
                 credit => credit.Id,
@@ -198,7 +192,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<ServiceResponse<IEnumerable<Transaction>>> GetCreditTransactions(string userId)
         {
-            var user = await _userRepo.GetSingleByAsync(p => p.Id.ToString() == userId, include: e => e.Include(e => e.Wallet), tracking: true);
+            ApplicationUser user = await _userRepo.GetSingleByAsync(p => p.Id.ToString() == userId, include: e => e.Include(e => e.Wallet), tracking: true);
             if (user == null)
             {
                 return new ServiceResponse<IEnumerable<Transaction>>
@@ -231,7 +225,7 @@ namespace Payment_Gateway.BLL.Implementation.Services
 
         public async Task<ServiceResponse<IEnumerable<Payout>>> GetDebitTransactions(string userId)
         {
-            var user = await _userRepo.GetByAsync(p => p.Id.ToString() == userId);
+            IEnumerable<ApplicationUser> user = await _userRepo.GetByAsync(p => p.Id.ToString() == userId);
             if (user == null)
             {
                 return new ServiceResponse<IEnumerable<Payout>>
