@@ -65,8 +65,8 @@ namespace Payment_Gateway.BLL.Implementation
 
         public async Task DebitTransfee(string userId, TransferResponse response)
         {
-            var feeAmount = await TranscationFees(response.data.amount);
-            var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
+            long feeAmount = await TranscationFees(response.data.amount);
+            ApplicationUser user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
             if (user != null)
             {
                 TransactionHistory history = new()
@@ -89,16 +89,16 @@ namespace Payment_Gateway.BLL.Implementation
                         }
                     }
                 };
+
                 var ops = await _TrasHisRepo.AddAsync(history);
             }
         }
 
-
-
         public async Task<bool> UpdatePayout(string userId, FinalizeTransferResponse Response)
         {
-            var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
-            var payout = user.Wallet.TransactionHistory.DebitTransactionList.SingleOrDefault(x => x.payoutId == Response.data.Id);
+            ApplicationUser user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
+            Payout? payout = user.Wallet.TransactionHistory.DebitTransactionList.SingleOrDefault(x => x.payoutId == Response.data.Id);
+
             if (payout.Responsestatus == true)
             {
                 payout.Status = Response.status;
@@ -142,7 +142,6 @@ namespace Payment_Gateway.BLL.Implementation
         }
 
 
-
         public async Task<object> CompleteTransfer(string userId, string pin, FinalizeTransferResponse response)
         {
             if (userId == null)
@@ -179,14 +178,6 @@ namespace Payment_Gateway.BLL.Implementation
                 Message = "Transfer Completed",
                 StatusCode = HttpStatusCode.OK,
             };
-        }
-
-
-
-        public class CompleteTransferResponse
-        {
-            public int amount { get; set; }
-            public string Message { get; set; }
         }
     }
 }

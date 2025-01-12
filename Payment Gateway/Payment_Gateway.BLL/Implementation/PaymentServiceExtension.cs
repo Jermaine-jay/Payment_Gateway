@@ -25,10 +25,10 @@ namespace Payment_Gateway.BLL.Implementation
 
         public async Task<object> CreatePayment(string userId, PaymentResponse response)
         {
-            var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString("d") == userId, include: u => u.Include(x => x.Wallet), tracking: true);
+            ApplicationUser user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString("d") == userId, include: u => u.Include(x => x.Wallet), tracking: true);
             if (user != null)
             {
-                var history = new TransactionHistory()
+                TransactionHistory history = new TransactionHistory()
                 {
                    Id = Guid.NewGuid(),
                     WalletId = user.WalletId,
@@ -57,7 +57,7 @@ namespace Payment_Gateway.BLL.Implementation
                     }
                 };
                 
-                var ops = _transaactionHisRepo.AddAsync(history);
+                Task<TransactionHistory> ops = _transaactionHisRepo.AddAsync(history);
                 return ops;
             }
 

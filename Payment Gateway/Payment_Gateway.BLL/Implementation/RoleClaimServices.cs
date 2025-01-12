@@ -47,9 +47,7 @@ namespace Payment_Gateway.BLL.Implementation
                     StatusCode = HttpStatusCode.BadRequest,
                     Success = false
                 };
-            }
-
-          
+            }   
 
             var newClaim = new ApplicationRoleClaim()
             {
