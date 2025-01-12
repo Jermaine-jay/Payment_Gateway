@@ -30,8 +30,6 @@ namespace Payment_Gateway.BLL.Implementation
             _serviceFactory = serviceFactory;
         }
 
-
-
         public async Task<object> CreatePayout(string userId, TransferResponse response)
         {
             var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString() == userId, include: u => u.Include(x => x.Wallet), tracking: true);
@@ -64,8 +62,6 @@ namespace Payment_Gateway.BLL.Implementation
             }
             return new InvalidOperationException("Can not create payout");
         }
-
-
 
         public async Task DebitTransfee(string userId, TransferResponse response)
         {

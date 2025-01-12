@@ -23,8 +23,6 @@ namespace Payment_Gateway.BLL.Implementation
             _transaactionHisRepo = _unitOfWork.GetRepository<TransactionHistory>();
         }
 
-
-
         public async Task<object> CreatePayment(string userId, PaymentResponse response)
         {
             var user = await _appuserRepo.GetSingleByAsync(x => x.Id.ToString("d") == userId, include: u => u.Include(x => x.Wallet), tracking: true);
